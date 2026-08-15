@@ -1,0 +1,236 @@
+/* Reset básico */
+body {
+  margin: 0;
+  background-color: #121212;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.login-inputs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.text-login {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  font-style: italic;
+}
+
+.inputs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 30px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  width: 380px;
+  padding-right: 55px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+label {
+  color: white;
+  font-size: 14px;
+}
+
+input {
+  border: 2px solid #333;
+  border-radius: 6px;
+  height: 35px;
+  padding: 0 10px;
+  width: 100%;
+  background-color: #2a2a2a;
+  color: white;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.input-group {
+  position: relative;
+  width: 100%;
+}
+
+.input-group input {
+  width: 100%;
+  height: 25px;
+  padding: 12px 10px;
+  background-color: #2a2a2a;
+  border: 2px solid #333;
+  border-radius: 6px;
+  color: white;
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.input-group label {
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #aaa;
+  pointer-events: none;
+  transition: 0.3s ease;
+  padding: 0 5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.input-group label {
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  transform: none;
+
+  color: #aaa;
+  pointer-events: none;
+  transition: 0.3s ease;
+
+  padding: 0 5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.input-group:focus-within label,
+.input-group.preenchido label {
+  top: -16px;
+  font-size: 14px;
+  color: #4a90e2;
+}
+
+.mensagem-erro {
+  display: block;
+  color: #ff4d4d;
+  font-size: 14px;
+  margin-top: 10px;
+  animation: aparecerErro 0.3s ease;
+}
+
+@keyframes aparecerErro {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-group .toggle-senha {
+  position: absolute;
+  right: -10px;
+  top: 12px;
+  transform: none;
+  background: none;
+  border: none;
+  color: #4a90e2;
+  cursor: pointer;
+  font-size: 25px;
+  padding: 0;
+  margin: 0;
+}
+
+.container-button {
+  margin-top: 10px;
+}
+
+.botao-container {
+  width: 90%;
+  padding: 12px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background-color: #4a90e2;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.botao-container:hover {
+  background-color: #357abd;
+}
+
+.tittle-submenu {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  display: flex;
+  gap: 5px;
+}
+
+.senha-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.link {
+  color: #4a90e2;
+  cursor: pointer;
+  font-weight: 600;
+  position: relative;
+  transition: 0.3s ease;
+  display: inline-block;
+  animation: pulseText 1.5s infinite;
+}
+
+@keyframes pulseText {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background-color: #4a90e2;
+  transition: width 0.3s ease;
+}
+
+.link:hover::after {
+  width: 100%;
+}
+
+.lembrar-usuario {
+  margin-top: -10px;
+  font-size: 14px;
+}
+
+.lembrar-usuario label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #aaa;
+
+  cursor: pointer;
+}
+
+.lembrar-usuario input {
+  width: 16px;
+  height: 16px;
+
+  cursor: pointer;
+
+  accent-color: #4a90e2;
+}

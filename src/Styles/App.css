@@ -1,0 +1,85 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.light {
+  background-color: white;
+  height: 100vh;
+}
+
+.light,
+.dark {
+  height: 100vh;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+.dark {
+  background-color: #121212;
+  height: 100vh;
+}
+
+.theme-button {
+  background: transparent;
+  border: none;
+  color: white;
+}
+.light .theme-button {
+  color: black;
+}
+
+button {
+  padding: 10px;
+  margin: 20px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.3;
+  color: aqua;
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark p,
+.dark label {
+  color: white;
+}
+
+.light h1 {
+  color: white;
+}
+.light h2,
+.light h3,
+.light h5,
+.light h6,
+.light p,
+.light label {
+  color: white;
+}
+
+.fade-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s ease;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}

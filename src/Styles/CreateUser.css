@@ -1,0 +1,156 @@
+.create-user {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.create-user-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 30px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  width: 380px;
+  padding-right: 55px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+.mensagem-erro {
+  color: #ff4d4d;
+  font-size: 14px;
+  margin: 12px 0 20px;
+  animation: aparecerErro 0.3s ease;
+}
+
+@keyframes aparecerErro {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-group input:focus ~ label,
+.input-group input:valid ~ label {
+  top: -15px;
+  left: 0;
+  font-size: 12px;
+}
+
+.create-user-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.create-user-container .input-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.dark .input-group {
+  color: white;
+}
+.light .input-group {
+  color: white;
+}
+
+.create-user-container .input-group input:focus ~ label,
+.create-user-container .input-group input:valid ~ label {
+  top: -15px;
+  left: 0;
+  font-size: 12px;
+}
+
+.toggle-senhaConfirma {
+  position: absolute;
+  right: -10px;
+  top: 12px;
+  transform: none;
+  background: none;
+  border: none;
+  color: #4a90e2;
+  cursor: pointer;
+  font-size: 25px;
+  padding: 0;
+  margin: 0;
+}
+
+.create-user-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.botao-criar {
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+}
+
+.botao-voltar {
+  position: relative;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  margin: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  color: white;
+}
+
+.botao-voltar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 8px;
+
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 280deg,
+    #4895ef 320deg,
+    #ffffff 350deg,
+    transparent 360deg
+  );
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  animation: cobrinha 2s linear infinite;
+}
+
+@keyframes cobrinha {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.botao-criar {
+  background-color: #4895ef;
+  color: white;
+  border-radius: 5px;
+}
+
+.botao-criar:hover {
+  opacity: 0.8;
+}
