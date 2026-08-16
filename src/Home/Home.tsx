@@ -6,6 +6,7 @@ type Produto = {
   nome: string;
   descricao: string;
   preco: number;
+  imagem: string;
 };
 
 type Props = {
@@ -99,7 +100,15 @@ function Home({ sair }: Props) {
         <div className="modal-overlay" onClick={fecharModal}>
           <div className="modal-produto" onClick={(e) => e.stopPropagation()}>
             <div className="modal-imagem">
-              <span>📦</span>
+              {produtoSelecionado.imagem ? (
+                <img
+                  src={produtoSelecionado.imagem}
+                  alt={produtoSelecionado.nome}
+                  className="modal-produto-imagem"
+                />
+              ) : (
+                <span>📦</span>
+              )}
             </div>
 
             <div className="modal-conteudo">
