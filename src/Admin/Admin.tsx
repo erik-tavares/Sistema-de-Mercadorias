@@ -10,6 +10,7 @@ type Produto = {
   nome: string;
   descricao: string;
   preco: number;
+  imagem: string;
 };
 
 function Admin({ sair }: Props) {
@@ -17,6 +18,7 @@ function Admin({ sair }: Props) {
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
+  const [imagem, setImagem] = useState("");
   const [produtoAnimando, setProdutoAnimando] = useState<number | null>(null);
   const [fechandoFormulario, setFechandoFormulario] = useState(false);
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -35,6 +37,7 @@ function Admin({ sair }: Props) {
   useEffect(() => {
     const dados = localStorage.getItem("produtos");
     const produtosSalvos = dados ? JSON.parse(dados) : [];
+
     setProdutos(produtosSalvos);
   }, []);
 
@@ -44,6 +47,7 @@ function Admin({ sair }: Props) {
     setNome("");
     setDescricao("");
     setPreco("");
+    setImagem("");
 
     setMostrarFormulario(true);
   }
@@ -58,8 +62,25 @@ function Admin({ sair }: Props) {
       setNome("");
       setDescricao("");
       setPreco("");
+      setImagem("");
       setEditandoId(null);
     }, 400);
+  }
+
+  function adicionarImagem(e: React.ChangeEvent<HTMLInputElement>) {
+    const arquivo = e.target.files?.[0];
+
+    if (!arquivo) {
+      return;
+    }
+
+    const leitor = new FileReader();
+
+    leitor.onloadend = () => {
+      setImagem(leitor.result as string);
+    };
+
+    leitor.readAsDataURL(arquivo);
   }
 
   function adicionarProduto() {
@@ -67,11 +88,14 @@ function Admin({ sair }: Props) {
       alert("Preencha todos os campos!");
       return;
     }
+
     const valorNumerico = Number(preco.replace(/\./g, "").replace(",", "."));
+
     if (isNaN(valorNumerico)) {
       alert("Digite um preço válido!");
       return;
     }
+
     const dados = localStorage.getItem("produtos");
     const produtosSalvos = dados ? JSON.parse(dados) : [];
     const novoProduto: Produto = {
@@ -79,6 +103,7 @@ function Admin({ sair }: Props) {
       nome: nome.trim(),
       descricao: descricao.trim(),
       preco: valorNumerico,
+      imagem: imagem,
     };
 
     produtosSalvos.push(novoProduto);
@@ -94,6 +119,7 @@ function Admin({ sair }: Props) {
     setNome("");
     setDescricao("");
     setPreco("");
+    setImagem("");
 
     setMostrarFormulario(true);
 
@@ -135,6 +161,8 @@ function Admin({ sair }: Props) {
       }),
     );
 
+    setImagem(produto.imagem || "");
+
     setMostrarFormulario(true);
   }
 
@@ -158,6 +186,7 @@ function Admin({ sair }: Props) {
           nome: nome.trim(),
           descricao: descricao.trim(),
           preco: valorNumerico,
+          imagem: imagem,
         };
       }
 
@@ -171,7 +200,10 @@ function Admin({ sair }: Props) {
     setNome("");
     setDescricao("");
     setPreco("");
+    setImagem("");
+
     setEditandoId(null);
+
     fecharFormulario();
   }
 
@@ -226,6 +258,18 @@ function Admin({ sair }: Props) {
               onChange={(e) => setPreco(e.target.value)}
             />
 
+            <input type="file" accept="image/*" onChange={adicionarImagem} />
+
+            {imagem && (
+              <div className="preview-imagem-container">
+                <img
+                  src={imagem}
+                  alt="Prévia do produto"
+                  className="preview-produto"
+                />
+              </div>
+            )}
+
             {editandoId !== null ? (
               <>
                 <button
@@ -258,6 +302,7 @@ function Admin({ sair }: Props) {
                     ? "✓ Produto adicionado!"
                     : "Adicionar à Loja"}
                 </button>
+
                 <button
                   type="button"
                   className="botao-cancelar"
@@ -270,8 +315,10 @@ function Admin({ sair }: Props) {
             )}
           </div>
         )}
+
         <div className="produtos-admin">
           <h2>Produtos cadastrados</h2>
+
           {produtos.length === 0 ? (
             <p>Nenhum produto cadastrado.</p>
           ) : (
@@ -283,8 +330,18 @@ function Admin({ sair }: Props) {
                 key={produto.id}
               >
                 <div className="produto-info">
+                  {produto.imagem && (
+                    <img
+                      src={produto.imagem}
+                      alt={produto.nome}
+                      className="produto-imagem-admin"
+                    />
+                  )}
+
                   <h3>{produto.nome}</h3>
+
                   <p>{produto.descricao}</p>
+
                   <strong>
                     {produto.preco.toLocaleString("pt-BR", {
                       style: "currency",
@@ -292,6 +349,7 @@ function Admin({ sair }: Props) {
                     })}
                   </strong>
                 </div>
+
                 <div className="produto-acoes">
                   <button
                     type="button"
@@ -300,6 +358,7 @@ function Admin({ sair }: Props) {
                   >
                     Editar
                   </button>
+
                   <button
                     type="button"
                     className="botao-excluir"
@@ -312,6 +371,7 @@ function Admin({ sair }: Props) {
             ))
           )}
         </div>
+
         <button
           type="button"
           className="botao-sair-admin"
