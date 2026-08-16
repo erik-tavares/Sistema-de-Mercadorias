@@ -59,14 +59,14 @@ function Home({ sair }: Props) {
       )}
       <div className="home-content">
         <h1>Bem-vindo!</h1>
-        <h2>Produtos</h2>
+        <h3>Produtos</h3>
         <div className="produtos-container">
           {produtos.length === 0 ? (
             <p>Nenhum produto disponível.</p>
           ) : (
             produtos.map((produto) => (
               <div className="produto-card" key={produto.id}>
-                <h3>{produto.nome}</h3>
+                <h2>{produto.nome}</h2>
                 <p>{produto.descricao}</p>
                 <strong>
                   {produto.preco.toLocaleString("pt-BR", {

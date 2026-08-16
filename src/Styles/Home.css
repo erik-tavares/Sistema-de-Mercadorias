@@ -3,57 +3,88 @@
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
+
   transition:
-    background-color 0.4s ease,
-    color 0.4s ease;
+    background-color 0.5s ease,
+    color 0.5s ease;
 }
 
-/* TEMA CLARO */
+/* =========================
+   TEMA CLARO
+========================= */
 
 .light .home {
   background-color: #ffffff;
   color: #121212;
 }
 
-.light .home h1,
-.light .home h2,
-.light {
+.light .home h3 {
   color: #121212;
 }
 
-/* TEMA ESCURO */
+.light .home h2 {
+  color: #ffffff;
+}
+
+.light .home h1 {
+  color: #121212;
+}
+
+/* =========================
+   TEMA ESCURO
+========================= */
 
 .dark .home {
   background-color: #121212;
-  color: white;
+  color: #ffffff;
 }
 
 .dark .home h1,
 .dark .home h2,
 .dark .home p {
-  color: white;
+  color: #ffffff;
 }
+
+/* =========================
+   CONTEÚDO
+========================= */
 
 .home-content {
   text-align: center;
   padding: 40px;
-  transition: color 0.4s ease;
+
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease;
 }
+
+/* =========================
+   BOTÃO SAIR
+========================= */
 
 .botao-sair {
   padding: 12px 30px;
+
   border: none;
   border-radius: 6px;
+
   background-color: #4a90e2;
   color: white;
+
   font-size: 16px;
   font-weight: bold;
+
   cursor: pointer;
-  transition: 0.3s;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .botao-sair:hover {
   background-color: #357abd;
+  transform: translateY(-2px);
 }
 
 .botao-sair:disabled {
@@ -61,31 +92,44 @@
   opacity: 0.6;
 }
 
+/* =========================
+   LOADING
+========================= */
+
 .loading-screen {
   position: fixed;
   inset: 0;
+
   z-index: 9999;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   background-color: #121212;
   color: white;
+
   animation: aparecerLoading 0.3s ease;
 }
 
 .loading-screen p {
   margin-top: 20px;
+
   font-size: 18px;
+
   color: white !important;
 }
 
 .loader {
   width: 50px;
   height: 50px;
+
   border: 5px solid #333;
   border-top: 5px solid #4a90e2;
+
   border-radius: 50%;
+
   animation: girar 1s linear infinite;
 }
 
@@ -109,38 +153,60 @@
   }
 }
 
+/* =========================
+   PRODUTOS
+========================= */
+
 .produtos-container {
   display: flex;
   flex-wrap: wrap;
+
   justify-content: center;
+
   gap: 20px;
+
   margin: 30px 0;
 }
 
+/* CARD */
+
 .produto-card {
   width: 250px;
+
   padding: 20px;
+
   background-color: #1e1e1e;
+
   border-radius: 10px;
+
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+
   color: white;
+
   text-align: left;
+
   transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+
   transition:
     transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.4s ease,
-    color 0.4s ease;
+    background-color 0.5s ease,
+    color 0.5s ease;
+
   will-change: transform, box-shadow;
+
   backface-visibility: hidden;
+
   transform-origin: center center;
 }
 
 .produto-card:hover {
   transform: translate3d(0, -10px, 0) scale(1.025) rotate(0.15deg);
+
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.35),
     0 8px 18px rgba(0, 0, 0, 0.2);
+
   animation: cardFlutuando 2.5s ease-in-out infinite;
 }
 
@@ -160,19 +226,31 @@
 
 .produto-card h3 {
   margin-top: 0;
+
   color: white;
+
+  transition: color 0.5s ease;
 }
 
 .produto-card p {
   color: white;
+
+  transition: color 0.5s ease;
 }
 
 .produto-card strong {
   display: block;
+
   margin-top: 15px;
+
   color: #4a90e2;
+
   font-size: 18px;
 }
+
+/* =========================
+   TRANSIÇÃO DO TEMA
+========================= */
 
 .home,
 .home-content,
@@ -182,48 +260,77 @@
 .home h1,
 .home h2 {
   transition:
-    background-color 0.4s ease,
-    color 0.4s ease;
+    background-color 0.5s ease,
+    color 0.5s ease;
 }
+
+/* =========================
+   BOTÃO VISUALIZAR
+========================= */
 
 .botao-visualizar {
   width: 100%;
+
   margin-top: 20px;
+
   padding: 10px;
+
   border: none;
   border-radius: 6px;
+
   background-color: #4a90e2;
   color: white;
+
   font-size: 15px;
   font-weight: bold;
+
   cursor: pointer;
-  transition: 0.3s;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .botao-visualizar:hover {
   background-color: #357abd;
+
   transform: translateY(-2px);
 }
 
+/* =========================
+   MODAL
+========================= */
+
 .modal-overlay {
   position: fixed;
+
   inset: 0;
+
   z-index: 9998;
+
   display: flex;
+
   justify-content: center;
   align-items: center;
+
   padding: 20px;
+
   background-color: rgba(0, 0, 0, 0.7);
+
   animation: aparecerModalFundo 0.25s ease;
 }
 
-modal-overlay.fechando {
+.modal-overlay.fechando {
   animation: fecharModalFundo 0.25s ease forwards;
 }
 
 .modal-produto.fechando {
   animation: fecharModalProduto 0.25s ease forwards;
 }
+
+/* =========================
+   FECHAMENTO MODAL
+========================= */
 
 @keyframes fecharModalFundo {
   from {
@@ -247,30 +354,47 @@ modal-overlay.fechando {
   }
 }
 
+/* =========================
+   MODAL PRODUTO
+========================= */
+
 .modal-produto {
   width: 420px;
   max-width: 100%;
+
   background-color: #1e1e1e;
+
   border-radius: 12px;
+
   overflow: hidden;
+
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+
   animation: abrirModalProduto 0.35s ease;
 }
+
+/* IMAGEM */
 
 .modal-imagem {
   width: 100%;
   height: 250px;
+
   display: flex;
+
   justify-content: center;
   align-items: center;
+
   background-color: #2a2a2a;
+
   overflow: hidden;
 }
 
 .modal-produto-imagem {
   width: 100%;
   height: 100%;
+
   object-fit: cover;
+
   display: block;
 }
 
@@ -278,46 +402,72 @@ modal-overlay.fechando {
   font-size: 70px;
 }
 
+/* CONTEÚDO */
+
 .modal-conteudo {
   padding: 25px;
+
   text-align: center;
 }
 
 .modal-conteudo h2 {
   margin-top: 0;
+
   color: white;
+
   font-size: 25px;
 }
 
 .modal-conteudo p {
   color: #ccc;
+
   line-height: 1.5;
+
   margin: 15px 0;
 }
 
 .modal-conteudo strong {
   display: block;
+
   margin: 20px 0;
+
   color: #4a90e2;
+
   font-size: 22px;
 }
 
+/* BOTÃO FECHAR */
+
 .botao-fechar-modal {
   width: 100%;
+
   padding: 12px;
+
   border: none;
   border-radius: 6px;
+
   background-color: #555;
   color: white;
+
   font-size: 15px;
   font-weight: bold;
+
   cursor: pointer;
-  transition: 0.3s;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .botao-fechar-modal:hover {
   background-color: #777;
+
+  transform: translateY(-2px);
 }
+
+/* =========================
+   ANIMAÇÕES MODAL
+========================= */
 
 @keyframes aparecerModalFundo {
   from {
@@ -332,11 +482,55 @@ modal-overlay.fechando {
 @keyframes abrirModalProduto {
   from {
     opacity: 0;
+
     transform: translateY(30px) scale(0.9);
   }
 
   to {
     opacity: 1;
+
     transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+
+@media (max-width: 600px) {
+  .home-content {
+    padding: 30px 20px;
+  }
+
+  .produto-card {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .modal-produto {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .modal-imagem {
+    height: 220px;
+  }
+}
+
+@media (max-width: 400px) {
+  .home-content {
+    padding: 25px 15px;
+  }
+
+  .modal-overlay {
+    padding: 15px;
+  }
+
+  .modal-imagem {
+    height: 200px;
+  }
+
+  .modal-conteudo {
+    padding: 20px;
   }
 }
