@@ -1,17 +1,25 @@
 .admin {
-  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  padding: 40px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .admin-container {
   width: 500px;
+  max-width: 100%;
   padding: 40px;
   border-radius: 12px;
   background-color: #1e1e1e;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
   text-align: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .admin-container h1 {
@@ -46,15 +54,11 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-
   margin-top: 20px;
   padding: 20px;
-
   border-radius: 10px;
   background-color: #252525;
-
   transform-origin: top;
-
   animation: abrirFormulario 0.4s ease forwards;
 }
 
@@ -128,25 +132,45 @@
   background-color: #388e3c;
 }
 
+.botao-salvar.produto-adicionado {
+  animation: produtoAdicionado 0.5s ease;
+}
+
+@keyframes produtoAdicionado {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.08);
+  }
+
+  70% {
+    transform: scale(0.96);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* BOTÃO SAIR */
 
 .botao-sair-admin {
   margin-top: 25px;
-
   padding: 10px 25px;
-
   border: none;
   border-radius: 6px;
-
   background-color: #555;
   color: white;
-
   cursor: pointer;
 }
 
 .botao-sair-admin:hover {
   background-color: #777;
 }
+
+/* PRODUTOS */
 
 .produtos-admin {
   margin-top: 30px;
@@ -165,14 +189,37 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-
   padding: 20px;
   margin-bottom: 15px;
-
   background-color: #2a2a2a;
   border-radius: 8px;
   border: 1px solid #333;
+  transition: transform 0.3s ease;
+}
+
+.produto-admin.produto-novo {
+  animation: produtoEntrando 1s ease;
+}
+
+@keyframes produtoEntrando {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.85);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateY(10px) scale(1.05);
+  }
+
+  70% {
+    transform: translateY(-5px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .produto-info {
@@ -228,10 +275,13 @@
 .botao-cancelar {
   margin-top: 10px;
   padding: 10px;
+
   border: none;
   border-radius: 6px;
+
   background-color: #555;
   color: white;
+
   cursor: pointer;
   font-weight: bold;
 }
