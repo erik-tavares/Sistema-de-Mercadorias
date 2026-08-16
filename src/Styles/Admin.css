@@ -241,11 +241,6 @@
   font-size: 18px;
 }
 
-.produto-acoes {
-  display: flex;
-  gap: 10px;
-}
-
 .botao-editar,
 .botao-excluir {
   border: none;

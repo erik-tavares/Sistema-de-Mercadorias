@@ -23,6 +23,16 @@ function Admin({ sair }: Props) {
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [produtoAdicionado, setProdutoAdicionado] = useState(false);
 
+  const [carregando, setCarregando] = useState(false);
+
+  function handleSair() {
+    setCarregando(true);
+
+    setTimeout(() => {
+      sair();
+    }, 2500);
+  }
+
   useEffect(() => {
     const dados = localStorage.getItem("produtos");
     const produtosSalvos = dados ? JSON.parse(dados) : [];
@@ -174,6 +184,13 @@ function Admin({ sair }: Props) {
 
   return (
     <div className="admin">
+      {carregando && (
+        <div className="loading-screen">
+          <div className="loader"></div>
+          <p>Saindo...</p>
+        </div>
+      )}
+
       <div className="admin-container">
         <h1>Painel Administrativo</h1>
 
@@ -302,8 +319,13 @@ function Admin({ sair }: Props) {
             ))
           )}
         </div>
-        <button type="button" className="botao-sair-admin" onClick={sair}>
-          Sair
+        <button
+          type="button"
+          className="botao-sair-admin"
+          onClick={handleSair}
+          disabled={carregando}
+        >
+          {carregando ? "Saindo..." : "Sair"}
         </button>
       </div>
     </div>
