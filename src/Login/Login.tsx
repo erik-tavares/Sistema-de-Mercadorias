@@ -12,15 +12,19 @@ type Props = {
 function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
+
   const [email, setEmail] = useState(() => {
     return localStorage.getItem("ultimoUsuario") || "";
   });
+
   const [senha, setSenha] = useState(() => {
     return localStorage.getItem("ultimaSenha") || "";
   });
+
   const [lembrarUsuario, setLembrarUsuario] = useState(() => {
     return localStorage.getItem("lembrarUsuario") === "true";
   });
+
   const [erros, setErros] = useState({
     email: "",
     senha: "",
@@ -47,6 +51,7 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
 
     const dados = localStorage.getItem("usuarios");
     const usuarios = dados ? JSON.parse(dados) : [];
+
     const usuario = usuarios.find(
       (u: any) => u.email === email && u.senha === senha,
     );
@@ -60,16 +65,11 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
       return;
     }
 
+    // LOGIN CORRETO
     setErros({
       email: "",
       senha: "",
     });
-
-    if (usuario.tipo === "admin") {
-      irParaAdmin();
-    } else {
-      irParaHome();
-    }
 
     if (lembrarUsuario) {
       localStorage.setItem("ultimoUsuario", email);
@@ -85,11 +85,16 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
 
     console.log("Usuário logado:", usuario);
 
-    if (usuario.tipo === "admin") {
-      irParaAdmin();
-    } else {
-      irParaHome();
-    }
+    // Só mostra a animação depois que o login foi validado
+    setCarregando(true);
+
+    setTimeout(() => {
+      if (usuario.tipo === "admin") {
+        irParaAdmin();
+      } else {
+        irParaHome();
+      }
+    }, 2500);
   }
 
   return (
@@ -100,11 +105,13 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
           <p>Entrando...</p>
         </div>
       )}
+
       <div>
         <div className="inputs-container">
           <div className="text-login">
             <h1>Login</h1>
           </div>
+
           <div className={`input-group ${email ? "preenchido" : ""}`}>
             <input
               type="email"
@@ -112,17 +119,21 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
+
                 setErros((prev) => ({
                   ...prev,
                   email: "",
                 }));
               }}
             />
+
             <label>E-mail</label>
+
             {erros.email && (
               <span className="mensagem-erro">{erros.email}</span>
             )}
           </div>
+
           <div className={`input-group ${senha ? "preenchido" : ""}`}>
             <input
               type={mostrarSenha ? "text" : "password"}
@@ -130,13 +141,16 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
               value={senha}
               onChange={(e) => {
                 setSenha(e.target.value);
+
                 setErros((prev) => ({
                   ...prev,
                   senha: "",
                 }));
               }}
             />
+
             <label>Senha</label>
+
             <button
               type="button"
               onClick={() => setMostrarSenha(!mostrarSenha)}
@@ -144,10 +158,12 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
             >
               {mostrarSenha ? <IoEyeOff /> : <IoEye />}
             </button>
+
             {erros.senha && (
               <span className="mensagem-erro">{erros.senha}</span>
             )}
           </div>
+
           <div className="lembrar-usuario">
             <label>
               <input
@@ -155,27 +171,24 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
                 checked={lembrarUsuario}
                 onChange={(e) => setLembrarUsuario(e.target.checked)}
               />
+
               <span>Lembrar último Usuário</span>
             </label>
           </div>
         </div>
+
         <div className="container-button">
           <div className="container-button">
             <button
               className="botao-container"
-              onClick={() => {
-                setCarregando(true);
-
-                setTimeout(() => {
-                  handleLogin();
-                }, 2500);
-              }}
+              onClick={handleLogin}
               disabled={carregando}
             >
               Entrar
             </button>
           </div>
         </div>
+
         <div className="tittle-submenu">
           <h4>
             Não tem conta? Crie uma agora!
