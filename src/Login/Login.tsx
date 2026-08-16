@@ -85,7 +85,6 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
 
     console.log("Usuário logado:", usuario);
 
-    // Só mostra a animação depois que o login foi validado
     setCarregando(true);
 
     setTimeout(() => {
