@@ -58,7 +58,7 @@ function Home({ sair }: Props) {
         </div>
       )}
       <div className="home-content">
-        <h1>Bem-vindo! 👋</h1>
+        <h1>Bem-vindo!</h1>
         <h2>Produtos</h2>
         <div className="produtos-container">
           {produtos.length === 0 ? (
@@ -94,16 +94,9 @@ function Home({ sair }: Props) {
         </button>
       </div>
 
-      {/* MODAL DO PRODUTO */}
       {produtoSelecionado && (
-        <div
-          className={`modal-overlay ${fechandoModal ? "fechando" : ""}`}
-          onClick={fecharModal}
-        >
-          <div
-            className={`modal-produto ${fechandoModal ? "fechando" : ""}`}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className={`modal-overlay ${fechandoModal ? "fechando" : ""}`}>
+          <div className={`modal-produto ${fechandoModal ? "fechando" : ""}`}>
             <div className="modal-imagem">
               {produtoSelecionado.imagem ? (
                 <img
