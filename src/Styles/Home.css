@@ -122,23 +122,42 @@
 .produto-card {
   width: 250px;
   padding: 20px;
-
   background-color: #1e1e1e;
   border-radius: 10px;
-
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-
   color: white;
   text-align: left;
-
+  transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
   transition:
-    transform 0.3s ease,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1),
     background-color 0.4s ease,
     color 0.4s ease;
+  will-change: transform, box-shadow;
+  backface-visibility: hidden;
+  transform-origin: center center;
 }
 
 .produto-card:hover {
-  transform: translateY(-5px);
+  transform: translate3d(0, -10px, 0) scale(1.025) rotate(0.15deg);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    0 8px 18px rgba(0, 0, 0, 0.2);
+  animation: cardFlutuando 2.5s ease-in-out infinite;
+}
+
+@keyframes cardFlutuando {
+  0% {
+    transform: translate3d(0, -10px, 0) scale(1.025) rotate(0.15deg);
+  }
+
+  50% {
+    transform: translate3d(0, -13px, 0) scale(1.028) rotate(-0.15deg);
+  }
+
+  100% {
+    transform: translate3d(0, -10px, 0) scale(1.025) rotate(0.15deg);
+  }
 }
 
 .produto-card h3 {
@@ -168,8 +187,6 @@
     background-color 0.4s ease,
     color 0.4s ease;
 }
-
-/* BOTÃO VISUALIZAR */
 
 .botao-visualizar {
   width: 100%;
