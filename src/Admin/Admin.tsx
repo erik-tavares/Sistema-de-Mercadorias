@@ -22,7 +22,6 @@ function Admin({ sair }: Props) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [produtoAdicionado, setProdutoAdicionado] = useState(false);
-
   const [carregando, setCarregando] = useState(false);
 
   function handleSair() {
@@ -88,26 +87,20 @@ function Admin({ sair }: Props) {
 
     setProdutos(produtosSalvos);
 
-    // Anima o botão
     setProdutoAdicionado(true);
 
-    // Anima o produto recém-adicionado
     setProdutoAnimando(novoProduto.id);
 
-    // Limpa os campos
     setNome("");
     setDescricao("");
     setPreco("");
 
-    // Mantém o formulário aberto
     setMostrarFormulario(true);
 
-    // Remove a animação do botão
     setTimeout(() => {
       setProdutoAdicionado(false);
     }, 1500);
 
-    // Remove a animação do produto
     setTimeout(() => {
       setProdutoAnimando(null);
     }, 1000);

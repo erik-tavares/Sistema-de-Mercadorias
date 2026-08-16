@@ -15,18 +15,31 @@ type Props = {
 function Home({ sair }: Props) {
   const [carregando, setCarregando] = useState(false);
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(
+    null,
+  );
 
   useEffect(() => {
     const dados = localStorage.getItem("produtos");
     const produtosSalvos = dados ? JSON.parse(dados) : [];
+
     setProdutos(produtosSalvos);
   }, []);
 
   function handleSair() {
     setCarregando(true);
+
     setTimeout(() => {
       sair();
     }, 2500);
+  }
+
+  function visualizarProduto(produto: Produto) {
+    setProdutoSelecionado(produto);
+  }
+
+  function fecharModal() {
+    setProdutoSelecionado(null);
   }
 
   return (
@@ -37,9 +50,12 @@ function Home({ sair }: Props) {
           <p>Saindo...</p>
         </div>
       )}
+
       <div className="home-content">
         <h1>Bem-vindo! 👋</h1>
+
         <h2>Produtos</h2>
+
         <div className="produtos-container">
           {produtos.length === 0 ? (
             <p>Nenhum produto disponível.</p>
@@ -47,17 +63,28 @@ function Home({ sair }: Props) {
             produtos.map((produto) => (
               <div className="produto-card" key={produto.id}>
                 <h3>{produto.nome}</h3>
+
                 <p>{produto.descricao}</p>
+
                 <strong>
                   {produto.preco.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </strong>
+
+                <button
+                  type="button"
+                  className="botao-visualizar"
+                  onClick={() => visualizarProduto(produto)}
+                >
+                  Visualizar
+                </button>
               </div>
             ))
           )}
         </div>
+
         <button
           className="botao-sair"
           onClick={handleSair}
@@ -66,6 +93,38 @@ function Home({ sair }: Props) {
           {carregando ? "Saindo..." : "Sair"}
         </button>
       </div>
+
+      {/* MODAL DO PRODUTO */}
+      {produtoSelecionado && (
+        <div className="modal-overlay" onClick={fecharModal}>
+          <div className="modal-produto" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-imagem">
+              <span>📦</span>
+            </div>
+
+            <div className="modal-conteudo">
+              <h2>{produtoSelecionado.nome}</h2>
+
+              <p>{produtoSelecionado.descricao}</p>
+
+              <strong>
+                {produtoSelecionado.preco.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </strong>
+
+              <button
+                type="button"
+                className="botao-fechar-modal"
+                onClick={fecharModal}
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

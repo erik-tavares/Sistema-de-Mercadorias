@@ -43,6 +43,7 @@ body {
   right: 20px;
   width: 45px;
   height: 45px;
+  margin: 20px;
   border: none;
   border-radius: 50%;
   background-color: #2a2a2a;
@@ -67,7 +68,6 @@ body {
 
 button {
   padding: 10px;
-  margin: 20px;
   cursor: pointer;
 }
 
