@@ -202,6 +202,36 @@
   animation: aparecerModalFundo 0.25s ease;
 }
 
+modal-overlay.fechando {
+  animation: fecharModalFundo 0.25s ease forwards;
+}
+
+.modal-produto.fechando {
+  animation: fecharModalProduto 0.25s ease forwards;
+}
+
+@keyframes fecharModalFundo {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fecharModalProduto {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+}
+
 .modal-produto {
   width: 420px;
   max-width: 100%;
