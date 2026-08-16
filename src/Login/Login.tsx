@@ -6,10 +6,13 @@ import { IoEyeOff } from "react-icons/io5";
 type Props = {
   irParaCadastro: () => void;
   irParaHome: () => void;
+  irParaAdmin: () => void;
 };
 
-function Login({ irParaCadastro, irParaHome }: Props) {
+function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
+
+  const [carregando, setCarregando] = useState(false);
 
   const [email, setEmail] = useState(() => {
     return localStorage.getItem("ultimoUsuario") || "";
@@ -68,6 +71,12 @@ function Login({ irParaCadastro, irParaHome }: Props) {
       senha: "",
     });
 
+    if (usuario.tipo === "admin") {
+      irParaAdmin();
+    } else {
+      irParaHome();
+    }
+
     if (lembrarUsuario) {
       localStorage.setItem("ultimoUsuario", email);
       localStorage.setItem("ultimaSenha", senha);
@@ -78,13 +87,26 @@ function Login({ irParaCadastro, irParaHome }: Props) {
       localStorage.removeItem("lembrarUsuario");
     }
 
+    localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+
     console.log("Usuário logado:", usuario);
 
-    irParaHome();
+    if (usuario.tipo === "admin") {
+      irParaAdmin();
+    } else {
+      irParaHome();
+    }
   }
 
   return (
     <div className="login-inputs">
+      {carregando && (
+        <div className="loading-screen-login">
+          <div className="loader-login"></div>
+          <p>Entrando...</p>
+        </div>
+      )}
+
       <div>
         <div className="inputs-container">
           <div className="text-login">
@@ -157,9 +179,21 @@ function Login({ irParaCadastro, irParaHome }: Props) {
         </div>
 
         <div className="container-button">
-          <button className="botao-container" onClick={handleLogin}>
-            Entrar
-          </button>
+          <div className="container-button">
+            <button
+              className="botao-container"
+              onClick={() => {
+                setCarregando(true);
+
+                setTimeout(() => {
+                  handleLogin();
+                }, 2500);
+              }}
+              disabled={carregando}
+            >
+              Entrar
+            </button>
+          </div>
         </div>
 
         <div className="tittle-submenu">

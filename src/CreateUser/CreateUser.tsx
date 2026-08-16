@@ -75,6 +75,7 @@ function CreateUser({ voltar }: Props) {
       nome,
       email,
       senha,
+      tipo: "cliente",
     };
 
     usuarios.push(novoUsuario);

@@ -7,6 +7,7 @@ import { CSSTransition, SwitchTransition } from "react-transition-group";
 import CreateUser from "./CreateUser/CreateUser";
 import Home from "./Home/Home";
 import Users from "./Users/user";
+import Admin from "./Admin/Admin";
 
 function App() {
   const [dark, setDark] = useState(() => {
@@ -14,7 +15,7 @@ function App() {
   });
 
   const [pagina, setPagina] = useState<
-    "login" | "user" | "home" | "CreateUser"
+    "login" | "user" | "home" | "admin" | "CreateUser"
   >("login");
 
   const nodeRef = useRef(null);
@@ -22,6 +23,32 @@ function App() {
   useEffect(() => {
     localStorage.setItem("theme", dark ? "dark" : "light");
   }, [dark]);
+
+  useEffect(() => {
+    const dados = localStorage.getItem("usuarios");
+
+    const usuarios = dados ? JSON.parse(dados) : [];
+
+    const adminExiste = usuarios.some(
+      (usuario: any) =>
+        usuario.email === "admin@email.com" && usuario.tipo === "admin",
+    );
+
+    if (!adminExiste) {
+      const admin = {
+        nome: "Administrador",
+        email: "admin@email.com",
+        senha: "123456",
+        tipo: "admin",
+      };
+
+      usuarios.push(admin);
+
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+      console.log("Administrador criado automaticamente.");
+    }
+  }, []);
 
   return (
     <div className={dark ? "dark" : "light"}>
@@ -41,15 +68,22 @@ function App() {
               <Login
                 irParaCadastro={() => setPagina("CreateUser")}
                 irParaHome={() => setPagina("home")}
+                irParaAdmin={() => setPagina("admin")}
               />
             )}
 
+            {/* CADASTRO */}
             {pagina === "CreateUser" && (
               <CreateUser voltar={() => setPagina("login")} />
             )}
 
+            {/* HOME DO CLIENTE */}
             {pagina === "home" && <Home sair={() => setPagina("login")} />}
 
+            {/* PAINEL DO ADMIN */}
+            {pagina === "admin" && <Admin sair={() => setPagina("login")} />}
+
+            {/* USUÁRIOS */}
             {pagina === "user" && <Users />}
           </div>
         </CSSTransition>

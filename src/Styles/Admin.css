@@ -1,0 +1,222 @@
+.admin {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-container {
+  width: 500px;
+  padding: 40px;
+  border-radius: 12px;
+  background-color: #1e1e1e;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.admin-container h1 {
+  color: white;
+}
+
+.admin-container p {
+  color: #ccc;
+}
+
+/* BOTÃO ADICIONAR */
+
+.botao-adicionar {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin: 25px 0;
+  border: none;
+  border-radius: 8px;
+
+  background-color: #4a90e2;
+  color: white;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.botao-adicionar:hover {
+  background-color: #357abd;
+  transform: translateY(-2px);
+}
+
+/* FORMULÁRIO */
+
+.form-produto {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  margin-top: 20px;
+  padding: 20px;
+
+  border-radius: 10px;
+  background-color: #252525;
+}
+
+.form-produto h2 {
+  color: white;
+  margin-top: 0;
+}
+
+.form-produto input {
+  box-sizing: border-box;
+
+  width: 100%;
+  height: 45px;
+
+  padding: 10px;
+
+  border: 2px solid #333;
+  border-radius: 6px;
+
+  background-color: #2a2a2a;
+  color: white;
+
+  font-size: 16px;
+}
+
+.form-produto input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.botao-salvar {
+  padding: 12px;
+
+  border: none;
+  border-radius: 6px;
+
+  background-color: #4caf50;
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.botao-salvar:hover {
+  background-color: #388e3c;
+}
+
+/* BOTÃO SAIR */
+
+.botao-sair-admin {
+  margin-top: 25px;
+
+  padding: 10px 25px;
+
+  border: none;
+  border-radius: 6px;
+
+  background-color: #555;
+  color: white;
+
+  cursor: pointer;
+}
+
+.botao-sair-admin:hover {
+  background-color: #777;
+}
+
+.produtos-admin {
+  margin-top: 30px;
+}
+
+.produtos-admin h2 {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.produtos-admin > p {
+  color: #aaa;
+}
+
+.produto-admin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  padding: 20px;
+  margin-bottom: 15px;
+
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.produto-info {
+  flex: 1;
+}
+
+.produto-info h3 {
+  margin: 0 0 8px;
+  color: white;
+}
+
+.produto-info p {
+  margin: 0 0 10px;
+  color: #aaa;
+}
+
+.produto-info strong {
+  color: #4a90e2;
+  font-size: 18px;
+}
+
+.produto-acoes {
+  display: flex;
+  gap: 10px;
+}
+
+.botao-editar,
+.botao-excluir {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+}
+
+.botao-editar {
+  background-color: #4a90e2;
+}
+
+.botao-editar:hover {
+  background-color: #357abd;
+}
+
+.botao-excluir {
+  background-color: #d64545;
+}
+
+.botao-excluir:hover {
+  background-color: #b83232;
+}
+
+.botao-cancelar {
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #555;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.botao-cancelar:hover {
+  background-color: #666;
+}
