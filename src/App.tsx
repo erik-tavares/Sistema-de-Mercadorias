@@ -13,11 +13,9 @@ function App() {
   const [dark, setDark] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
-
   const [pagina, setPagina] = useState<
     "login" | "user" | "home" | "admin" | "CreateUser"
   >("login");
-
   const nodeRef = useRef(null);
 
   useEffect(() => {
@@ -26,9 +24,7 @@ function App() {
 
   useEffect(() => {
     const dados = localStorage.getItem("usuarios");
-
     const usuarios = dados ? JSON.parse(dados) : [];
-
     const adminExiste = usuarios.some(
       (usuario: any) =>
         usuario.email === "admin@email.com" && usuario.tipo === "admin",
@@ -43,9 +39,7 @@ function App() {
       };
 
       usuarios.push(admin);
-
       localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
       console.log("Administrador criado automaticamente.");
     }
   }, []);

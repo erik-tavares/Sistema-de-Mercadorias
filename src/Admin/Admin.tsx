@@ -14,21 +14,16 @@ type Produto = {
 
 function Admin({ sair }: Props) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
-
+  const [fechandoFormulario, setFechandoFormulario] = useState(false);
   const [produtos, setProdutos] = useState<Produto[]>([]);
-
   const [editandoId, setEditandoId] = useState<number | null>(null);
 
-  // Carrega os produtos salvos
   useEffect(() => {
     const dados = localStorage.getItem("produtos");
-
     const produtosSalvos = dados ? JSON.parse(dados) : [];
-
     setProdutos(produtosSalvos);
   }, []);
 
@@ -37,7 +32,6 @@ function Admin({ sair }: Props) {
       alert("Preencha todos os campos!");
       return;
     }
-
     const valorNumerico = Number(preco.replace(/\./g, "").replace(",", "."));
 
     if (isNaN(valorNumerico)) {
@@ -46,9 +40,7 @@ function Admin({ sair }: Props) {
     }
 
     const dados = localStorage.getItem("produtos");
-
     const produtosSalvos = dados ? JSON.parse(dados) : [];
-
     const novoProduto = {
       id: Date.now(),
       nome: nome.trim(),
@@ -57,7 +49,6 @@ function Admin({ sair }: Props) {
     };
 
     produtosSalvos.push(novoProduto);
-
     localStorage.setItem("produtos", JSON.stringify(produtosSalvos));
 
     setProdutos(produtosSalvos);
@@ -157,7 +148,7 @@ function Admin({ sair }: Props) {
       <div className="admin-container">
         <h1>Painel Administrativo</h1>
 
-        <button
+        {/* <button
           type="button"
           className="botao-adicionar"
           onClick={() => {
@@ -169,10 +160,14 @@ function Admin({ sair }: Props) {
           }}
         >
           {mostrarFormulario ? "Fechar" : "+ Adicionar produto"}
-        </button>
+        </button> */}
 
         {mostrarFormulario && (
-          <div className="form-produto">
+          <div
+            className={`form-produto ${
+              fechandoFormulario ? "fechando-formulario" : ""
+            }`}
+          >
             <h2>{editandoId !== null ? "Editar produto" : "Novo produto"}</h2>
 
             <input
@@ -220,10 +215,41 @@ function Admin({ sair }: Props) {
                 className="botao-salvar"
                 onClick={adicionarProduto}
               >
-                Adicionar à Home
+                Adicionar à Loja
               </button>
             )}
+
+            {/* BOTÃO FICA ABAIXO DO FORMULÁRIO */}
+            <button
+              type="button"
+              className="botao-adicionar"
+              onClick={() => {
+                if (mostrarFormulario) {
+                  setFechandoFormulario(true);
+
+                  setTimeout(() => {
+                    cancelarEdicao();
+                    setFechandoFormulario(false);
+                  }, 400);
+                } else {
+                  setMostrarFormulario(true);
+                }
+              }}
+            >
+              {mostrarFormulario ? "Fechar" : "+ Adicionar produto"}
+            </button>
           </div>
+        )}
+
+        {/* BOTÃO INICIAL */}
+        {!mostrarFormulario && (
+          <button
+            type="button"
+            className="botao-adicionar"
+            onClick={() => setMostrarFormulario(true)}
+          >
+            + Adicionar produto
+          </button>
         )}
 
         {/* LISTA DE PRODUTOS */}
@@ -270,7 +296,6 @@ function Admin({ sair }: Props) {
           )}
         </div>
 
-        {/* SAIR */}
         <button type="button" className="botao-sair-admin" onClick={sair}>
           Sair
         </button>

@@ -25,21 +25,13 @@
 /* BOTÃO ADICIONAR */
 
 .botao-adicionar {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  margin: 25px 0;
+  padding: 12px;
   border: none;
-  border-radius: 8px;
-
-  background-color: #4a90e2;
+  border-radius: 6px;
+  background-color: #4caf50;
   color: white;
-
-  font-size: 16px;
   font-weight: bold;
-
   cursor: pointer;
-
   transition: 0.3s;
 }
 
@@ -60,6 +52,38 @@
 
   border-radius: 10px;
   background-color: #252525;
+
+  transform-origin: top;
+
+  animation: abrirFormulario 0.4s ease forwards;
+}
+
+.form-produto.fechando-formulario {
+  animation: fecharFormulario 0.4s ease forwards;
+}
+
+@keyframes abrirFormulario {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scaleY(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes fecharFormulario {
+  from {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scaleY(0.95);
+  }
 }
 
 .form-produto h2 {
@@ -91,17 +115,12 @@
 
 .botao-salvar {
   padding: 12px;
-
   border: none;
   border-radius: 6px;
-
   background-color: #4caf50;
   color: white;
-
   font-weight: bold;
-
   cursor: pointer;
-
   transition: 0.3s;
 }
 

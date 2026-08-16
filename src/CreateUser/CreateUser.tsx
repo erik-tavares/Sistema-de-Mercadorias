@@ -14,12 +14,10 @@ function CreateUser({ voltar }: Props) {
     senha: "",
     confirmarSenha: "",
   });
-
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
-
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarSenhaConfirmar, setMostrarSenhaConfirmar] = useState(false);
 
@@ -59,7 +57,6 @@ function CreateUser({ voltar }: Props) {
 
     const dados = localStorage.getItem("usuarios");
     const usuarios = dados ? JSON.parse(dados) : [];
-
     const existe = usuarios.some((u: any) => u.email === email);
 
     if (existe) {
@@ -98,7 +95,6 @@ function CreateUser({ voltar }: Props) {
         noValidate
       >
         <h1>Novo Usuário</h1>
-
         <div className={`input-group ${nome ? "preenchido" : ""}`}>
           <input
             type="text"
@@ -110,12 +106,9 @@ function CreateUser({ voltar }: Props) {
               setErros((prev) => ({ ...prev, nome: "" }));
             }}
           />
-
           <label>Nome</label>
-
           {erros.nome && <span className="mensagem-erro">{erros.nome}</span>}
         </div>
-
         <div className={`input-group ${email ? "preenchido" : ""}`}>
           <input
             type="email"
@@ -127,12 +120,9 @@ function CreateUser({ voltar }: Props) {
               setErros((prev) => ({ ...prev, email: "" }));
             }}
           />
-
           <label>E-mail</label>
-
           {erros.email && <span className="mensagem-erro">{erros.email}</span>}
         </div>
-
         <div className={`input-group ${senha ? "preenchido" : ""}`}>
           <input
             type={mostrarSenha ? "text" : "password"}
@@ -144,9 +134,7 @@ function CreateUser({ voltar }: Props) {
               setErros((prev) => ({ ...prev, senha: "" }));
             }}
           />
-
           <label>Senha</label>
-
           <button
             type="button"
             onClick={() => setMostrarSenha(!mostrarSenha)}
@@ -154,10 +142,8 @@ function CreateUser({ voltar }: Props) {
           >
             {mostrarSenha ? <IoEyeOff /> : <IoEye />}
           </button>
-
           {erros.senha && <span className="mensagem-erro">{erros.senha}</span>}
         </div>
-
         <div className={`input-group ${confirmarSenha ? "preenchido" : ""}`}>
           <input
             type={mostrarSenhaConfirmar ? "text" : "password"}
@@ -169,9 +155,7 @@ function CreateUser({ voltar }: Props) {
               setErros((prev) => ({ ...prev, confirmarSenha: "" }));
             }}
           />
-
           <label>Confirmar senha</label>
-
           <button
             type="button"
             onClick={() => setMostrarSenhaConfirmar(!mostrarSenhaConfirmar)}
@@ -179,17 +163,14 @@ function CreateUser({ voltar }: Props) {
           >
             {mostrarSenhaConfirmar ? <IoEyeOff /> : <IoEye />}
           </button>
-
           {erros.confirmarSenha && (
             <span className="mensagem-erro">{erros.confirmarSenha}</span>
           )}
         </div>
-
         <div className="create-user-buttons">
           <button className="botao-voltar" type="button" onClick={voltar}>
             Voltar
           </button>
-
           <button className="botao-criar" type="submit">
             Criar conta
           </button>

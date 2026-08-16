@@ -237,8 +237,6 @@ input:focus {
   accent-color: #4a90e2;
 }
 
-/* Animação de carregamento ao entrar */
-
 .loading-screen-login {
   position: fixed;
   inset: 0;
@@ -283,8 +281,6 @@ input:focus {
     girarLogin 0.8s linear infinite,
     aparecerLoader 0.5s ease;
 }
-
-/* Entrada da tela de carregamento */
 
 @keyframes entradaLoading {
   from {
