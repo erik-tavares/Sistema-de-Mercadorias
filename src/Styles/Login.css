@@ -12,6 +12,18 @@ body {
   min-height: 100vh;
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+}
+
+.login-form-content {
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.login-carregando .login-form-content {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.98);
 }
 
 .text-login {
@@ -239,13 +251,13 @@ input:focus {
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #121212;
+  background: rgba(12, 12, 12, 0.96);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 99999;
-  animation: entradaLoading 0.5s ease forwards;
+  animation: entradaLoading 0.15s ease forwards;
 }
 
 .loading-screen-login p {
@@ -254,19 +266,31 @@ input:focus {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 18px;
   font-weight: bold;
+  opacity: 1;
+  animation: textoLoading 0.2s ease forwards;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  animation: textoLoading 0.5s ease forwards;
+.loading-screen-login p::after {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  text-align: left;
+  animation: pontosCarregando 1.2s ease-in-out infinite;
 }
 
 .loader-login {
   width: 45px;
   height: 45px;
-  border: 5px solid #333;
+  border: 5px solid rgba(255, 255, 255, 0.15);
   border-top: 5px solid #4a90e2;
   border-radius: 50%;
   animation:
-    girarLogin 0.8s linear infinite,
-    aparecerLoader 0.5s ease;
+    girarLogin 0.7s linear infinite,
+    aparecerLoader 0.1s ease;
+  box-shadow: 0 0 25px rgba(74, 144, 226, 0.35);
 }
 
 @keyframes entradaLoading {
@@ -310,5 +334,23 @@ input:focus {
 
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes pontosCarregando {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+  100% {
+    content: "";
   }
 }
