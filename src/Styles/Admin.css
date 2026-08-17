@@ -400,6 +400,56 @@
   }
 }
 
+@media (max-width: 768px) {
+  .admin {
+    padding: 24px 12px;
+  }
+
+  .admin-container {
+    padding: 24px 18px;
+  }
+
+  .form-produto {
+    padding: 16px;
+  }
+
+  .produto-admin {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .produto-acoes {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin {
+    padding: 18px 10px;
+  }
+
+  .admin-container {
+    padding: 20px 14px;
+  }
+
+  .botao-adicionar,
+  .botao-salvar,
+  .botao-sair-admin {
+    width: 100%;
+  }
+
+  .produto-acoes {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .produto-acoes button {
+    width: 100%;
+  }
+}
+
 /* ========================================
    USUÁRIOS CADASTRADOS
 ======================================== */

@@ -428,3 +428,64 @@ input:focus {
     content: "";
   }
 }
+
+@media (max-width: 768px) {
+  .login-inputs {
+    align-items: flex-start;
+    padding: 24px 16px;
+  }
+
+  .inputs-container {
+    width: min(100%, 380px);
+    padding: 24px 18px 26px;
+    padding-right: 18px;
+  }
+
+  .input-group .toggle-senha {
+    right: 10px;
+  }
+
+  .botao-container {
+    width: 100%;
+    margin: 10px 0 0;
+  }
+
+  .tittle-submenu {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .login-inputs {
+    padding: 18px 12px;
+  }
+
+  .text-login h1 {
+    font-size: 24px;
+  }
+
+  .inputs-container {
+    gap: 18px;
+    padding: 20px 14px 22px;
+  }
+
+  .input-group input {
+    font-size: 16px;
+    height: 22px;
+  }
+
+  .input-group label {
+    font-size: 15px;
+  }
+
+  .check-lembrar {
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  .checkmark {
+    width: 16px;
+    height: 16px;
+  }
+}
