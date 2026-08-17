@@ -163,14 +163,15 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
           </div>
 
           <div className="lembrar-usuario">
-            <label>
+            <label className={`check-lembrar ${lembrarUsuario ? "checked" : ""}`}>
               <input
                 type="checkbox"
                 checked={lembrarUsuario}
                 onChange={(e) => setLembrarUsuario(e.target.checked)}
               />
 
-              <span>Lembrar último Usuário</span>
+              <span className="checkmark" aria-hidden="true"></span>
+              <span className="check-text">Lembrar último Usuário</span>
             </label>
           </div>
         </div>
