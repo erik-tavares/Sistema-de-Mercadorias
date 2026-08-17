@@ -16,7 +16,10 @@ body {
 }
 
 .login-form-content {
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
 }
 
 .login-carregando .login-form-content {
@@ -178,6 +181,7 @@ input:focus {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 500;
   display: flex;
+  flex-direction: row-reverse;
   gap: 5px;
 }
 
@@ -237,6 +241,9 @@ input:focus {
   gap: 8px;
   color: #aaa;
   cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  gap: 10px;
 }
 
 .lembrar-usuario input {
