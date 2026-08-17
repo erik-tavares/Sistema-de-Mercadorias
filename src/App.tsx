@@ -43,6 +43,7 @@ function App() {
         usuario.email === "admin@email.com" && usuario.tipo === "admin",
     );
 
+    // Usuário ADM Já existente
     if (!adminExiste) {
       const admin = {
         nome: "Administrador",
@@ -81,7 +82,12 @@ function App() {
           classNames="fade"
           nodeRef={nodeRef}
         >
-          <div ref={nodeRef} className={pagina === "login" && loginEntrando ? "login-entrando" : ""}>
+          <div
+            ref={nodeRef}
+            className={
+              pagina === "login" && loginEntrando ? "login-entrando" : ""
+            }
+          >
             {pagina === "login" && (
               <Login
                 irParaCadastro={() => setPagina("CreateUser")}
