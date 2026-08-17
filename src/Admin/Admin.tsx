@@ -13,6 +13,14 @@ type Produto = {
   imagem: string;
 };
 
+type Usuario = {
+  id: number;
+  nome: string;
+  email: string;
+  senha?: string;
+  tipo?: "admin" | "usuario";
+};
+
 function Admin({ sair }: Props) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nome, setNome] = useState("");
@@ -25,6 +33,8 @@ function Admin({ sair }: Props) {
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [produtoAdicionado, setProdutoAdicionado] = useState(false);
   const [carregando, setCarregando] = useState(false);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [usuarioLogado, setUsuarioLogado] = useState<Usuario | null>(null);
 
   function handleSair() {
     setCarregando(true);
@@ -35,10 +45,21 @@ function Admin({ sair }: Props) {
   }
 
   useEffect(() => {
-    const dados = localStorage.getItem("produtos");
-    const produtosSalvos = dados ? JSON.parse(dados) : [];
+    const dadosProdutos = localStorage.getItem("produtos");
+    const produtosSalvos = dadosProdutos ? JSON.parse(dadosProdutos) : [];
 
     setProdutos(produtosSalvos);
+
+    const dadosUsuarios = localStorage.getItem("usuarios");
+    const usuariosSalvos = dadosUsuarios ? JSON.parse(dadosUsuarios) : [];
+
+    setUsuarios(usuariosSalvos);
+
+    const dadosUsuarioLogado = localStorage.getItem("usuarioLogado");
+
+    if (dadosUsuarioLogado) {
+      setUsuarioLogado(JSON.parse(dadosUsuarioLogado));
+    }
   }, []);
 
   function abrirFormulario() {
@@ -371,7 +392,58 @@ function Admin({ sair }: Props) {
             ))
           )}
         </div>
+        <div className="usuarios-admin">
+          <h2>Usuários cadastrados</h2>
 
+          {usuarios.length === 0 ? (
+            <p>Nenhum usuário cadastrado.</p>
+          ) : (
+            <div className="usuarios-lista">
+              {usuarios.map((usuario) => {
+                const estaLogado =
+                  usuarioLogado !== null && usuarioLogado.id === usuario.id;
+
+                return (
+                  <div
+                    className={`usuario-admin ${
+                      estaLogado ? "usuario-logado" : ""
+                    }`}
+                    key={usuario.id}
+                  >
+                    <div className="usuario-info">
+                      <div className="usuario-avatar">
+                        {usuario.nome.charAt(0).toUpperCase()}
+                      </div>
+
+                      <div>
+                        <h3>{usuario.nome}</h3>
+
+                        <p>{usuario.email}</p>
+
+                        <span className="usuario-tipo">
+                          {usuario.tipo === "admin"
+                            ? "Administrador"
+                            : "Usuário"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="usuario-status">
+                      {estaLogado ? (
+                        <span className="status-online">
+                          <span className="status-bolinha"></span>
+                          Logado agora
+                        </span>
+                      ) : (
+                        <span className="status-offline">Não logado</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
         <button
           type="button"
           className="botao-sair-admin"

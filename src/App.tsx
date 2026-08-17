@@ -13,6 +13,8 @@ function App() {
   const [dark, setDark] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
+  const [saindo, setSaindo] = useState(false);
+  const [loginEntrando, setLoginEntrando] = useState(false);
   const [pagina, setPagina] = useState<
     "login" | "user" | "home" | "admin" | "CreateUser"
   >("login");
@@ -21,6 +23,17 @@ function App() {
   useEffect(() => {
     localStorage.setItem("theme", dark ? "dark" : "light");
   }, [dark]);
+
+  useEffect(() => {
+    if (pagina === "login") {
+      setLoginEntrando(true);
+      const timer = window.setTimeout(() => {
+        setLoginEntrando(false);
+      }, 600);
+
+      return () => window.clearTimeout(timer);
+    }
+  }, [pagina]);
 
   useEffect(() => {
     const dados = localStorage.getItem("usuarios");
@@ -44,6 +57,17 @@ function App() {
     }
   }, []);
 
+  if (saindo) {
+    return (
+      <div className={dark ? "dark" : "light"}>
+        <div className="loading-screen app-exit-screen">
+          <div className="loader"></div>
+          <p>Saindo</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={dark ? "dark" : "light"}>
       <button className="theme-button" onClick={() => setDark(!dark)}>
@@ -57,7 +81,7 @@ function App() {
           classNames="fade"
           nodeRef={nodeRef}
         >
-          <div ref={nodeRef}>
+          <div ref={nodeRef} className={pagina === "login" && loginEntrando ? "login-entrando" : ""}>
             {pagina === "login" && (
               <Login
                 irParaCadastro={() => setPagina("CreateUser")}
@@ -72,7 +96,17 @@ function App() {
             )}
 
             {/* HOME DO CLIENTE */}
-            {pagina === "home" && <Home sair={() => setPagina("login")} />}
+            {pagina === "home" && (
+              <Home
+                sair={() => {
+                  setTimeout(() => {
+                    setPagina("login");
+                    setSaindo(false);
+                  }, 1500);
+                }}
+                onInicioSaida={() => setSaindo(true)}
+              />
+            )}
 
             {/* PAINEL DO ADMIN */}
             {pagina === "admin" && <Admin sair={() => setPagina("login")} />}

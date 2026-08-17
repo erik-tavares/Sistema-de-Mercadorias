@@ -65,7 +65,6 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
       return;
     }
 
-    // LOGIN CORRETO
     setErros({
       email: "",
       senha: "",
@@ -93,19 +92,19 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
       } else {
         irParaHome();
       }
-    }, 2500);
+    }, 1500);
   }
 
   return (
-    <div className="login-inputs">
+    <div className={`login-inputs ${carregando ? "login-carregando" : ""}`}>
       {carregando && (
         <div className="loading-screen-login">
           <div className="loader-login"></div>
-          <p>Entrando...</p>
+          <p>Entrando</p>
         </div>
       )}
 
-      <div>
+      <div className={`login-form-content ${carregando ? "oculta" : ""}`}>
         <div className="inputs-container">
           <div className="text-login">
             <h1>Login</h1>
