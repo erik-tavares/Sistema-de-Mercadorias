@@ -231,9 +231,9 @@ function Admin({ sair }: Props) {
   return (
     <div className="admin">
       {carregando && (
-        <div className="loading-screen">
+        <div className="loading-screen admin-exit-screen">
           <div className="loader"></div>
-          <p>Saindo...</p>
+          <p>Saindo</p>
         </div>
       )}
 
