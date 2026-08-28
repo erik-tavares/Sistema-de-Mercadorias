@@ -3,6 +3,8 @@ import "../Styles/Admin.css";
 
 type Props = {
   sair: () => void;
+  usuarioLogado: Usuario | null;
+  onLogout: () => void;
 };
 
 type Produto = {
@@ -21,7 +23,7 @@ type Usuario = {
   tipo?: "admin" | "usuario";
 };
 
-function Admin({ sair }: Props) {
+function Admin({ sair, usuarioLogado, onLogout }: Props) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -33,33 +35,57 @@ function Admin({ sair }: Props) {
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [produtoAdicionado, setProdutoAdicionado] = useState(false);
   const [carregando, setCarregando] = useState(false);
+  const [carregandoDados, setCarregandoDados] = useState(true);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-  const [usuarioLogado, setUsuarioLogado] = useState<Usuario | null>(null);
 
   function handleSair() {
     setCarregando(true);
 
     setTimeout(() => {
+      onLogout();
       sair();
     }, 2500);
   }
 
   useEffect(() => {
-    const dadosProdutos = localStorage.getItem("produtos");
-    const produtosSalvos = dadosProdutos ? JSON.parse(dadosProdutos) : [];
+    async function carregarDados() {
+      setCarregandoDados(true);
 
-    setProdutos(produtosSalvos);
+      try {
+        const [produtosResponse, usuariosResponse] = await Promise.all([
+          fetch("http://localhost:3000/api/products"),
+          fetch("http://localhost:3000/api/users"),
+        ]);
 
-    const dadosUsuarios = localStorage.getItem("usuarios");
-    const usuariosSalvos = dadosUsuarios ? JSON.parse(dadosUsuarios) : [];
+        const produtosSalvos = produtosResponse.ok
+          ? await produtosResponse.json()
+          : [];
+        const usuariosSalvos = usuariosResponse.ok
+          ? await usuariosResponse.json()
+          : [];
 
-    setUsuarios(usuariosSalvos);
+        const produtosFormatados = produtosSalvos.map((produto: any) => ({
+          ...produto,
+          imagem: produto.imagem || "",
+        }));
 
-    const dadosUsuarioLogado = localStorage.getItem("usuarioLogado");
+        const usuariosFormatados = usuariosSalvos.map((usuario: any) => ({
+          id: usuario.id,
+          nome: usuario.nome || usuario.name,
+          email: usuario.email,
+          tipo: usuario.tipo || "cliente",
+        }));
 
-    if (dadosUsuarioLogado) {
-      setUsuarioLogado(JSON.parse(dadosUsuarioLogado));
+        setProdutos(produtosFormatados);
+        setUsuarios(usuariosFormatados);
+      } catch (error) {
+        console.error("Erro ao carregar dados do backend:", error);
+      } finally {
+        setCarregandoDados(false);
+      }
     }
+
+    carregarDados();
   }, []);
 
   function abrirFormulario() {
@@ -104,7 +130,7 @@ function Admin({ sair }: Props) {
     leitor.readAsDataURL(arquivo);
   }
 
-  function adicionarProduto() {
+  async function adicionarProduto() {
     if (!nome.trim() || !descricao.trim() || !preco.trim()) {
       alert("Preencha todos os campos!");
       return;
@@ -117,43 +143,58 @@ function Admin({ sair }: Props) {
       return;
     }
 
-    const dados = localStorage.getItem("produtos");
-    const produtosSalvos = dados ? JSON.parse(dados) : [];
-    const novoProduto: Produto = {
-      id: Date.now(),
-      nome: nome.trim(),
-      descricao: descricao.trim(),
-      preco: valorNumerico,
-      imagem: imagem,
-    };
+    try {
+      const resposta = await fetch("http://localhost:3000/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: nome.trim(),
+          descricao: descricao.trim(),
+          preco: valorNumerico,
+          imagem,
+        }),
+      });
 
-    produtosSalvos.push(novoProduto);
+      const novoProduto = await resposta.json();
 
-    localStorage.setItem("produtos", JSON.stringify(produtosSalvos));
+      if (!resposta.ok) {
+        alert(novoProduto.error || "Erro ao criar produto.");
+        return;
+      }
 
-    setProdutos(produtosSalvos);
+      setProdutos((prev) => [...prev, {
+        id: novoProduto.id,
+        nome: novoProduto.nome,
+        descricao: novoProduto.descricao,
+        preco: Number(novoProduto.preco),
+        imagem: novoProduto.imagem || "",
+      }]);
 
-    setProdutoAdicionado(true);
+      setProdutoAdicionado(true);
+      setProdutoAnimando(novoProduto.id);
 
-    setProdutoAnimando(novoProduto.id);
+      setNome("");
+      setDescricao("");
+      setPreco("");
+      setImagem("");
 
-    setNome("");
-    setDescricao("");
-    setPreco("");
-    setImagem("");
+      setMostrarFormulario(true);
 
-    setMostrarFormulario(true);
+      setTimeout(() => {
+        setProdutoAdicionado(false);
+      }, 1500);
 
-    setTimeout(() => {
-      setProdutoAdicionado(false);
-    }, 1500);
-
-    setTimeout(() => {
-      setProdutoAnimando(null);
-    }, 1000);
+      setTimeout(() => {
+        setProdutoAnimando(null);
+      }, 1000);
+    } catch (error) {
+      alert("Não foi possível conectar ao servidor.");
+    }
   }
 
-  function excluirProduto(id: number) {
+  async function excluirProduto(id: number) {
     const confirmar = window.confirm(
       "Tem certeza que deseja excluir este produto?",
     );
@@ -162,11 +203,20 @@ function Admin({ sair }: Props) {
       return;
     }
 
-    const produtosAtualizados = produtos.filter((produto) => produto.id !== id);
+    try {
+      const resposta = await fetch(`http://localhost:3000/api/products/${id}`, {
+        method: "DELETE",
+      });
 
-    localStorage.setItem("produtos", JSON.stringify(produtosAtualizados));
+      if (!resposta.ok) {
+        alert("Erro ao excluir produto.");
+        return;
+      }
 
-    setProdutos(produtosAtualizados);
+      setProdutos((prev) => prev.filter((produto) => produto.id !== id));
+    } catch (error) {
+      alert("Não foi possível conectar ao servidor.");
+    }
   }
 
   function iniciarEdicao(produto: Produto) {
@@ -187,7 +237,7 @@ function Admin({ sair }: Props) {
     setMostrarFormulario(true);
   }
 
-  function salvarEdicao() {
+  async function salvarEdicao() {
     if (!nome.trim() || !descricao.trim() || !preco.trim()) {
       alert("Preencha todos os campos!");
       return;
@@ -200,32 +250,56 @@ function Admin({ sair }: Props) {
       return;
     }
 
-    const produtosAtualizados = produtos.map((produto) => {
-      if (produto.id === editandoId) {
-        return {
-          ...produto,
+    if (editandoId === null) {
+      return;
+    }
+
+    try {
+      const resposta = await fetch(`http://localhost:3000/api/products/${editandoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           nome: nome.trim(),
           descricao: descricao.trim(),
           preco: valorNumerico,
-          imagem: imagem,
-        };
+          imagem,
+        }),
+      });
+
+      const produtoAtualizado = await resposta.json();
+
+      if (!resposta.ok) {
+        alert(produtoAtualizado.error || "Erro ao editar produto.");
+        return;
       }
 
-      return produto;
-    });
+      setProdutos((prev) =>
+        prev.map((produto) =>
+          produto.id === editandoId
+            ? {
+                ...produto,
+                nome: produtoAtualizado.nome,
+                descricao: produtoAtualizado.descricao,
+                preco: Number(produtoAtualizado.preco),
+                imagem: produtoAtualizado.imagem || "",
+              }
+            : produto,
+        ),
+      );
 
-    localStorage.setItem("produtos", JSON.stringify(produtosAtualizados));
+      setNome("");
+      setDescricao("");
+      setPreco("");
+      setImagem("");
 
-    setProdutos(produtosAtualizados);
+      setEditandoId(null);
 
-    setNome("");
-    setDescricao("");
-    setPreco("");
-    setImagem("");
-
-    setEditandoId(null);
-
-    fecharFormulario();
+      fecharFormulario();
+    } catch (error) {
+      alert("Não foi possível conectar ao servidor.");
+    }
   }
 
   return (
@@ -340,7 +414,9 @@ function Admin({ sair }: Props) {
         <div className="produtos-admin">
           <h2>Produtos cadastrados</h2>
 
-          {produtos.length === 0 ? (
+          {carregandoDados && produtos.length === 0 ? (
+            <p className="carregando-dados">Carregando produtos...</p>
+          ) : produtos.length === 0 ? (
             <p>Nenhum produto cadastrado.</p>
           ) : (
             produtos.map((produto) => (
@@ -395,7 +471,9 @@ function Admin({ sair }: Props) {
         <div className="usuarios-admin">
           <h2>Usuários cadastrados</h2>
 
-          {usuarios.length === 0 ? (
+          {carregandoDados && usuarios.length === 0 ? (
+            <p className="carregando-dados">Carregando usuários...</p>
+          ) : usuarios.length === 0 ? (
             <p>Nenhum usuário cadastrado.</p>
           ) : (
             <div className="usuarios-lista">

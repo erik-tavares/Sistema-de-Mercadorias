@@ -199,6 +199,14 @@
   color: #aaa;
 }
 
+.carregando-dados {
+  color: #c7d2fe;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.9;
+  margin: 10px 0 0;
+}
+
 .produto-acoes {
   display: flex;
   gap: 20px;

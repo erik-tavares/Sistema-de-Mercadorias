@@ -10,19 +10,47 @@ import Users from "./Users/user";
 import Admin from "./Admin/Admin";
 
 function App() {
-  const [dark, setDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
+  const [dark, setDark] = useState(false);
   const [saindo, setSaindo] = useState(false);
   const [loginEntrando, setLoginEntrando] = useState(false);
+  const [usuarioLogado, setUsuarioLogado] = useState<any>(null);
   const [pagina, setPagina] = useState<
     "login" | "user" | "home" | "admin" | "CreateUser"
   >("login");
   const nodeRef = useRef(null);
 
   useEffect(() => {
-    localStorage.setItem("theme", dark ? "dark" : "light");
-  }, [dark]);
+    if (usuarioLogado?.theme) {
+      setDark(usuarioLogado.theme === "dark");
+    }
+  }, [usuarioLogado]);
+
+  useEffect(() => {
+    async function carregarTemaSalvo() {
+      try {
+        const resposta = await fetch("http://localhost:3000/api/users");
+
+        if (!resposta.ok) {
+          return;
+        }
+
+        const usuarios = await resposta.json();
+        const usuarioSalvo = usuarios.find(
+          (usuario: any) => Boolean(usuario.rememberedEmail),
+        );
+
+        if (!usuarioSalvo || !usuarioSalvo.theme) {
+          return;
+        }
+
+        setDark(usuarioSalvo.theme === "dark");
+      } catch (error) {
+        console.error("Erro ao carregar tema salvo:", error);
+      }
+    }
+
+    carregarTemaSalvo();
+  }, []);
 
   useEffect(() => {
     if (pagina === "login") {
@@ -36,26 +64,42 @@ function App() {
   }, [pagina]);
 
   useEffect(() => {
-    const dados = localStorage.getItem("usuarios");
-    const usuarios = dados ? JSON.parse(dados) : [];
-    const adminExiste = usuarios.some(
-      (usuario: any) =>
-        usuario.email === "admin@email.com" && usuario.tipo === "admin",
-    );
+    async function garantirAdmin() {
+      try {
+        const resposta = await fetch("http://localhost:3000/api/users");
 
-    // Usuário ADM Já existente
-    if (!adminExiste) {
-      const admin = {
-        nome: "Administrador",
-        email: "admin@email.com",
-        senha: "123456",
-        tipo: "admin",
-      };
+        if (!resposta.ok) {
+          return;
+        }
 
-      usuarios.push(admin);
-      localStorage.setItem("usuarios", JSON.stringify(usuarios));
-      console.log("Administrador criado automaticamente.");
+        const usuarios = await resposta.json();
+        const adminExiste = usuarios.some(
+          (usuario: any) =>
+            usuario.email === "admin@email.com" && usuario.tipo === "admin",
+        );
+
+        if (!adminExiste) {
+          await fetch("http://localhost:3000/api/users", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              nome: "Administrador",
+              email: "admin@email.com",
+              senha: "123456",
+              tipo: "admin",
+            }),
+          });
+
+          console.log("Administrador criado automaticamente no banco.");
+        }
+      } catch (error) {
+        console.error("Erro ao garantir usuário admin:", error);
+      }
     }
+
+    garantirAdmin();
   }, []);
 
   if (saindo) {
@@ -71,7 +115,53 @@ function App() {
 
   return (
     <div className={dark ? "dark" : "light"}>
-      <button className="theme-button" onClick={() => setDark(!dark)}>
+      <button
+        className="theme-button"
+        onClick={async () => {
+          const proximoTema = dark ? "light" : "dark";
+          const proximoValorDark = !dark;
+          setDark(proximoValorDark);
+
+          try {
+            const respostaUsuarios = await fetch("http://localhost:3000/api/users");
+
+            if (!respostaUsuarios.ok) {
+              return;
+            }
+
+            const usuarios = await respostaUsuarios.json();
+            const usuarioTema =
+              usuarios.find((usuario: any) => usuario.id === usuarioLogado?.id) ||
+              usuarios.find((usuario: any) => Boolean(usuario.rememberedEmail)) ||
+              usuarios.find((usuario: any) => usuario.email === "admin@email.com");
+
+            if (!usuarioTema) {
+              return;
+            }
+
+            const respostaTema = await fetch(
+              `http://localhost:3000/api/users/${usuarioTema.id}/theme`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ theme: proximoTema }),
+              },
+            );
+
+            if (!respostaTema.ok) {
+              throw new Error("Falha ao salvar tema");
+            }
+
+            setUsuarioLogado((prev: any) =>
+              prev ? { ...prev, theme: proximoTema } : { ...usuarioTema, theme: proximoTema },
+            );
+          } catch (error) {
+            console.error("Erro ao salvar tema no banco:", error);
+          }
+        }}
+      >
         {dark ? <FaRegMoon size={20} /> : <FaMoon size={20} />}
       </button>
 
@@ -91,8 +181,13 @@ function App() {
             {pagina === "login" && (
               <Login
                 irParaCadastro={() => setPagina("CreateUser")}
-                irParaHome={() => setPagina("home")}
-                irParaAdmin={() => setPagina("admin")}
+                irParaHome={() => {
+                  setPagina("home");
+                }}
+                irParaAdmin={() => {
+                  setPagina("admin");
+                }}
+                onLogin={(usuario) => setUsuarioLogado(usuario)}
               />
             )}
 
@@ -104,6 +199,8 @@ function App() {
             {/* HOME DO CLIENTE */}
             {pagina === "home" && (
               <Home
+                usuarioLogado={usuarioLogado}
+                onLogout={() => setUsuarioLogado(null)}
                 sair={() => {
                   setTimeout(() => {
                     setPagina("login");
@@ -115,7 +212,13 @@ function App() {
             )}
 
             {/* PAINEL DO ADMIN */}
-            {pagina === "admin" && <Admin sair={() => setPagina("login")} />}
+            {pagina === "admin" && (
+              <Admin
+                usuarioLogado={usuarioLogado}
+                onLogout={() => setUsuarioLogado(null)}
+                sair={() => setPagina("login")}
+              />
+            )}
 
             {/* USUÁRIOS */}
             {pagina === "user" && <Users />}

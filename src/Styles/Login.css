@@ -160,21 +160,53 @@ input:focus {
 }
 
 .botao-container {
+  position: relative;
+  overflow: hidden;
   width: 90%;
   padding: 12px;
   cursor: pointer;
   border: none;
   border-radius: 6px;
-  background-color: #4a90e2;
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
   color: white;
   font-size: 15px;
   font-weight: bold;
-  transition: 0.2s;
+  box-shadow: 0 8px 18px rgba(74, 144, 226, 0.25);
+  transition:
+    background-color 0.3s ease,
+    transform 0.25s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
   margin: 20px;
 }
 
+.botao-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 80%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+}
+
 .botao-container:hover {
-  background-color: #357abd;
+  background: linear-gradient(135deg, #357abd 0%, #2c5f9f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(74, 144, 226, 0.32);
+}
+
+.botao-container:hover::before {
+  transform: translateX(120%);
+}
+
+.botao-container:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 6px 14px rgba(74, 144, 226, 0.2);
 }
 
 .tittle-submenu {

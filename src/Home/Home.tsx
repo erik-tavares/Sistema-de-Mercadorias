@@ -24,14 +24,16 @@ type ItemCarrinho = {
 type Props = {
   sair: () => void;
   onInicioSaida: () => void;
+  usuarioLogado: Usuario | null;
+  onLogout: () => void;
 };
 
-function Home({ sair, onInicioSaida }: Props) {
+function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
   const [carregando, setCarregando] = useState(false);
 
   const [produtos, setProdutos] = useState<Produto[]>([]);
 
-  const [usuarioLogado, setUsuarioLogado] = useState<Usuario | null>(null);
+  const [usuarioAtual, setUsuarioAtual] = useState<Usuario | null>(usuarioLogado);
 
   const [fechandoModal, setFechandoModal] = useState(false);
 
@@ -54,23 +56,25 @@ function Home({ sair, onInicioSaida }: Props) {
   // =========================
 
   useEffect(() => {
-    const dadosProdutos = localStorage.getItem("produtos");
+    setUsuarioAtual(usuarioLogado);
+  }, [usuarioLogado]);
 
-    const produtosSalvos = dadosProdutos ? JSON.parse(dadosProdutos) : [];
-
-    setProdutos(produtosSalvos);
-
-    const dadosUsuario = localStorage.getItem("usuarioLogado");
-
-    if (dadosUsuario) {
+  useEffect(() => {
+    async function carregarDados() {
       try {
-        const usuario = JSON.parse(dadosUsuario);
+        const resposta = await fetch("http://localhost:3000/api/products");
+        const produtosSalvos = resposta.ok ? await resposta.json() : [];
 
-        setUsuarioLogado(usuario);
+        setProdutos(produtosSalvos.map((produto: any) => ({
+          ...produto,
+          imagem: produto.imagem || "",
+        })));
       } catch (erro) {
-        console.error("Erro ao carregar usuário logado:", erro);
+        console.error("Erro ao buscar produtos:", erro);
       }
     }
+
+    carregarDados();
   }, []);
 
   // =========================
@@ -78,44 +82,24 @@ function Home({ sair, onInicioSaida }: Props) {
   // =========================
 
   useEffect(() => {
-    if (!usuarioLogado?.email) {
+    if (!usuarioAtual?.email) {
+      setCarrinho([]);
       return;
     }
 
-    const chaveCarrinho = `carrinho_${usuarioLogado.email}`;
-
-    const dadosCarrinho = localStorage.getItem(chaveCarrinho);
-
-    if (dadosCarrinho) {
-      try {
-        const carrinhoSalvo = JSON.parse(dadosCarrinho);
-
-        setCarrinho(carrinhoSalvo);
-      } catch (erro) {
-        console.error("Erro ao carregar carrinho:", erro);
-
-        setCarrinho([]);
-      }
-    } else {
-      setCarrinho([]);
-    }
-  }, [usuarioLogado]);
+    setCarrinho([]);
+  }, [usuarioAtual]);
 
   // =========================
   // SALVAR CARRINHO
   // =========================
 
   function salvarCarrinho(carrinhoAtualizado: ItemCarrinho[]) {
-    if (!usuarioLogado?.email) {
+    if (!usuarioAtual?.email) {
       return;
     }
 
     setCarrinho(carrinhoAtualizado);
-
-    localStorage.setItem(
-      `carrinho_${usuarioLogado.email}`,
-      JSON.stringify(carrinhoAtualizado),
-    );
   }
 
   // =========================
@@ -226,7 +210,7 @@ function Home({ sair, onInicioSaida }: Props) {
     setFechandoCarrinho(false);
 
     setTimeout(() => {
-      localStorage.removeItem("usuarioLogado");
+      onLogout();
       sair();
     }, 2000);
   }

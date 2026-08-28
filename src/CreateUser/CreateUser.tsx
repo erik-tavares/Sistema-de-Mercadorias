@@ -21,7 +21,7 @@ function CreateUser({ voltar }: Props) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarSenhaConfirmar, setMostrarSenhaConfirmar] = useState(false);
 
-  function handleCadastro() {
+  async function handleCadastro() {
     const novosErros = {
       nome: "",
       email: "",
@@ -55,33 +55,39 @@ function CreateUser({ voltar }: Props) {
       return;
     }
 
-    const dados = localStorage.getItem("usuarios");
-    const usuarios = dados ? JSON.parse(dados) : [];
-    const existe = usuarios.some((u: any) => u.email === email);
-
-    if (existe) {
-      setErros({
-        ...novosErros,
-        email: "Esse e-mail já está cadastrado",
+    try {
+      const resposta = await fetch("http://localhost:3000/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome,
+          email,
+          senha,
+          tipo: "cliente",
+        }),
       });
 
-      return;
+      const data = await resposta.json();
+
+      if (!resposta.ok) {
+        setErros({
+          ...novosErros,
+          email: data.error || "Erro ao criar usuário",
+        });
+
+        return;
+      }
+
+      alert("Usuário criado com sucesso!");
+      voltar();
+    } catch (error) {
+      setErros({
+        ...novosErros,
+        email: "Não foi possível conectar ao servidor.",
+      });
     }
-
-    const novoUsuario = {
-      nome,
-      email,
-      senha,
-      tipo: "cliente",
-    };
-
-    usuarios.push(novoUsuario);
-
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-    alert("Usuário criado com sucesso!");
-
-    voltar();
   }
 
   return (

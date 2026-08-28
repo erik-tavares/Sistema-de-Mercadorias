@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../Styles/Login.css";
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
@@ -7,30 +7,54 @@ type Props = {
   irParaCadastro: () => void;
   irParaHome: () => void;
   irParaAdmin: () => void;
+  onLogin: (usuario: any) => void;
 };
 
-function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
+function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
 
-  const [email, setEmail] = useState(() => {
-    return localStorage.getItem("ultimoUsuario") || "";
-  });
+  const [email, setEmail] = useState("");
 
-  const [senha, setSenha] = useState(() => {
-    return localStorage.getItem("ultimaSenha") || "";
-  });
+  const [senha, setSenha] = useState("");
 
-  const [lembrarUsuario, setLembrarUsuario] = useState(() => {
-    return localStorage.getItem("lembrarUsuario") === "true";
-  });
+  const [lembrarUsuario, setLembrarUsuario] = useState(false);
 
   const [erros, setErros] = useState({
     email: "",
     senha: "",
   });
 
-  function handleLogin() {
+  useEffect(() => {
+    async function carregarUltimoLogin() {
+      try {
+        const resposta = await fetch("http://localhost:3000/api/users");
+
+        if (!resposta.ok) {
+          return;
+        }
+
+        const usuarios = await resposta.json();
+        const usuarioSalvo = usuarios.find(
+          (usuario: any) => usuario.rememberedEmail || usuario.rememberedPassword,
+        );
+
+        if (!usuarioSalvo) {
+          return;
+        }
+
+        setEmail(usuarioSalvo.rememberedEmail || "");
+        setSenha(usuarioSalvo.rememberedPassword || "");
+        setLembrarUsuario(Boolean(usuarioSalvo.rememberedEmail));
+      } catch (error) {
+        console.error("Erro ao carregar último login salvo:", error);
+      }
+    }
+
+    carregarUltimoLogin();
+  }, []);
+
+  async function handleLogin() {
     const novosErros = {
       email: "",
       senha: "",
@@ -49,50 +73,53 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin }: Props) {
       return;
     }
 
-    const dados = localStorage.getItem("usuarios");
-    const usuarios = dados ? JSON.parse(dados) : [];
-
-    const usuario = usuarios.find(
-      (u: any) => u.email === email && u.senha === senha,
-    );
-
-    if (!usuario) {
-      setErros({
-        email: "",
-        senha: "E-mail ou senha incorretos",
-      });
-
-      return;
-    }
-
     setErros({
       email: "",
       senha: "",
     });
 
-    if (lembrarUsuario) {
-      localStorage.setItem("ultimoUsuario", email);
-      localStorage.setItem("ultimaSenha", senha);
-      localStorage.setItem("lembrarUsuario", "true");
-    } else {
-      localStorage.removeItem("ultimoUsuario");
-      localStorage.removeItem("ultimaSenha");
-      localStorage.removeItem("lembrarUsuario");
-    }
-
-    localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
-
-    console.log("Usuário logado:", usuario);
-
     setCarregando(true);
 
-    setTimeout(() => {
+    try {
+      const resposta = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          senha,
+          lembrarUsuario,
+        }),
+      });
+
+      const usuario = await resposta.json();
+
+      if (!resposta.ok) {
+        setCarregando(false);
+        setErros({
+          email: "",
+          senha: usuario.error || "E-mail ou senha incorretos",
+        });
+
+        return;
+      }
+
+      console.log("Usuário logado:", usuario);
+      onLogin(usuario);
+
       if (usuario.tipo === "admin") {
         irParaAdmin();
       } else {
         irParaHome();
       }
-    }, 1500);
+    } catch (error) {
+      setCarregando(false);
+      setErros({
+        email: "",
+        senha: "Não foi possível conectar ao servidor.",
+      });
+    }
   }
 
   return (
