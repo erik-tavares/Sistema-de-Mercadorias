@@ -1,126 +1,73 @@
-# Projeto Teste
+# React + TypeScript + Vite
 
-Aplicação full-stack com frontend em React + TypeScript + Vite e backend em Node.js + Express + Prisma + PostgreSQL.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Tecnologias
+Currently, two official plugins are available:
 
-- Frontend: React, TypeScript, Vite
-- Backend: Node.js, Express
-- Banco: PostgreSQL com Prisma
-- Autenticação: bcryptjs
-- UI: React Icons + CSS customizado
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Estrutura do projeto
+## React Compiler
 
-```bash
-.
-├── backTeste/
-│   ├── prisma/
-│   ├── src/
-│   ├── .env
-│   ├── package.json
-│   └── ...
-├── src/
-├── public/
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-├── .gitignore
-└── README.md
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-## Requisitos
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-- Node.js 18+
-- npm
-- Banco PostgreSQL configurado
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-## Instalação
-
-1. Clone o projeto e acesse a pasta raiz:
-
-```bash
-git clone <url-do-repositorio>
-cd projetoteste
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-2. Instale as dependências do frontend:
-
-```bash
-npm install
-```
-
-3. Instale as dependências do backend:
-
-```bash
-cd backTeste
-npm install
-```
-
-## Configuração do ambiente
-
-Crie o arquivo `.env` dentro da pasta `backTeste` com a URL do banco PostgreSQL:
-
-```env
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require"
-```
-
-Exemplo:
-
-```env
-DATABASE_URL="postgresql://postgres:senha@ep-exemplo.us-east-1.aws.neon.tech/neondb?sslmode=require"
-```
-
-> Esse arquivo não deve ser enviado para o GitHub.
-
-## Inicialização do backend
-
-Dentro de `backTeste`:
-
-```bash
-npm run dev
-```
-
-O backend será iniciado em:
-
-```bash
-http://localhost:3000
-```
-
-## Inicialização do frontend
-
-Na raiz do projeto:
-
-```bash
-npm run dev
-```
-
-O frontend será iniciado em:
-
-```bash
-http://localhost:5173
-```
-
-## Prisma
-
-Se for a primeira vez ou após alterar o schema:
-
-```bash
-cd backTeste
-npx prisma migrate dev
-npx prisma generate
-```
-
-## Build de produção
-
-Frontend:
-
-```bash
-npm run build
-```
-
-## Observações
-
-- O backend e o frontend precisam estar rodando simultaneamente.
-- O admin é criado automaticamente ao iniciar a aplicação, se ainda não existir.
-- As credenciais e URLs do banco ficam em variáveis de ambiente e não devem ser expostas publicamente.
