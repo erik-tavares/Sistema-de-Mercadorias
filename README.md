@@ -1,73 +1,158 @@
-# React + TypeScript + Vite
+# Projeto Teste
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação full-stack para autenticação, cadastro de usuários, painel administrativo, gerenciamento de produtos e persistência de preferências do usuário, como tema e último login.
 
-Currently, two official plugins are available:
+## Stack principal
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Frontend: React + TypeScript + Vite
+- Backend: Node.js + Express
+- Banco de dados: PostgreSQL com Prisma
+- Autenticação: bcryptjs
+- UI e animações: CSS customizado, React Icons e transições visuais
 
-## React Compiler
+## Estrutura do projeto
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+.
+├── backTeste/
+│   ├── prisma/
+│   ├── src/
+│   ├── .env
+│   ├── package.json
+│   └── ...
+├── src/
+├── public/
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+├── eslint.config.js
+├── .gitignore
+├── README.md
+└── index.html
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Requisitos
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Node.js 18+
+- npm
+- PostgreSQL configurado e acessível
+- URL válida para conexão do Prisma
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Instalação
+
+1. Clone o repositório:
+
+```bash
+git clone <url-do-repositorio>
+cd projetoteste
 ```
+
+2. Instale as dependências do frontend:
+
+```bash
+npm install
+```
+
+3. Instale as dependências do backend:
+
+```bash
+cd backTeste
+npm install
+```
+
+4. Volte para a raiz do projeto:
+
+```bash
+cd ..
+```
+
+## Configuração do ambiente
+
+Crie um arquivo `.env` dentro da pasta `backTeste` com a URL do banco PostgreSQL:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require"
+```
+
+Exemplo:
+
+```env
+DATABASE_URL="postgresql://postgres:senha@ep-exemplo.us-east-1.aws.neon.tech/neondb?sslmode=require"
+```
+
+> Esse arquivo não deve ser enviado para o GitHub.
+
+## Como rodar o projeto
+
+### Backend
+
+Dentro de `backTeste`:
+
+```bash
+npm run dev
+```
+
+A API fica disponível em:
+
+```bash
+http://localhost:3000
+```
+
+### Frontend
+
+Na raiz do projeto:
+
+```bash
+npm run dev
+```
+
+A interface da aplicação fica disponível em:
+
+```bash
+http://localhost:5173
+```
+
+## Prisma
+
+Se for a primeira vez ou depois de alterar o schema do banco, execute:
+
+```bash
+cd backTeste
+npx prisma migrate dev
+npx prisma generate
+```
+
+Esses comandos aplicam as migrações e geram o cliente Prisma atualizado.
+
+## Build de produção
+
+Na raiz do projeto:
+
+```bash
+npm run build
+```
+
+## Funcionalidades principais
+
+- login com validação de e-mail e senha
+- logout com animação e transição visual
+- lembrar último login salvo no banco
+- tema escuro e claro persistido por usuário
+- painel administrativo para usuários e produtos
+- cadastro e listagem de produtos
+- upload de imagem em base64 com suporte de payload maior no backend
+
+## Observações importantes
+
+- O backend e o frontend precisam rodar ao mesmo tempo durante o uso da aplicação.
+- O admin pode ser criado automaticamente pela lógica da aplicação, se ainda não existir.
+- O tema e o último usuário são persistidos no banco, não no localStorage.
+- Credenciais e URLs do banco devem permanecer apenas no ambiente local.
+
+## Segurança
+
+- Variáveis de ambiente ficam em `.env`.
+- Arquivos sensíveis e temporários são ignorados pelo `.gitignore`.
+- Não compartilhe credenciais de banco, senhas ou tokens em repositórios públicos.
