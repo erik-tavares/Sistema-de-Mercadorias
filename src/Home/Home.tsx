@@ -74,6 +74,7 @@ function Home({
 
         setProdutos(produtosSalvos.map((produto: any) => ({
           ...produto,
+          preco: Number(produto.preco),
           imagem: produto.imagem || "",
         })));
       } catch (erro) {
