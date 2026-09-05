@@ -19,11 +19,13 @@ type Usuario = {
   id: number;
   nome: string;
   email: string;
+  fotoPerfil?: string;
+  lastLoginAt?: string | null;
   senha?: string;
   tipo?: "admin" | "usuario";
 };
 
-function Admin({ sair, usuarioLogado, onLogout }: Props) {
+function Admin({ sair, onLogout }: Props) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -37,6 +39,27 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
   const [carregando, setCarregando] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(true);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [usuariosAtivos, setUsuariosAtivos] = useState<number[]>([]);
+  const [fotoUsuarioSelecionada, setFotoUsuarioSelecionada] =
+    useState<Usuario | null>(null);
+  const [produtoImagemSelecionada, setProdutoImagemSelecionada] =
+    useState<Produto | null>(null);
+
+  async function carregarUsuariosAtivos() {
+    try {
+      const resposta = await fetch("http://localhost:3000/api/users/active");
+
+      if (!resposta.ok) {
+        return;
+      }
+
+      const dados = await resposta.json();
+      setUsuariosAtivos(dados.ids || []);
+    } catch (error) {
+      console.error("Erro ao carregar usuários ativos:", error);
+    }
+  }
+
 
   function handleSair() {
     setCarregando(true);
@@ -45,6 +68,36 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
       onLogout();
       sair();
     }, 2500);
+  }
+
+  function formatarUltimoLogin(lastLoginAt?: string | null) {
+    if (!lastLoginAt) {
+      return "Nunca acessou";
+    }
+
+    const diferencaEmSegundos = Math.max(
+      0,
+      Math.floor((Date.now() - new Date(lastLoginAt).getTime()) / 1000),
+    );
+
+    if (diferencaEmSegundos < 60) {
+      return "Agora há pouco";
+    }
+
+    const minutos = Math.floor(diferencaEmSegundos / 60);
+
+    if (minutos < 60) {
+      return `Há ${minutos} minuto${minutos === 1 ? "" : "s"}`;
+    }
+
+    const horas = Math.floor(minutos / 60);
+
+    if (horas < 24) {
+      return `Há ${horas} hora${horas === 1 ? "" : "s"}`;
+    }
+
+    const dias = Math.floor(horas / 24);
+    return `Há ${dias} dia${dias === 1 ? "" : "s"}`;
   }
 
   useEffect(() => {
@@ -73,6 +126,8 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
           id: usuario.id,
           nome: usuario.nome || usuario.name,
           email: usuario.email,
+          fotoPerfil: usuario.fotoPerfil || "",
+          lastLoginAt: usuario.lastLoginAt || null,
           tipo: usuario.tipo || "cliente",
         }));
 
@@ -86,6 +141,47 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
     }
 
     carregarDados();
+  }, []);
+
+  useEffect(() => {
+    carregarUsuariosAtivos();
+    const primeiraAtualizacao = window.setTimeout(carregarUsuariosAtivos, 1000);
+    const intervalo = window.setInterval(carregarUsuariosAtivos, 3000);
+
+    return () => {
+      window.clearTimeout(primeiraAtualizacao);
+      window.clearInterval(intervalo);
+    };
+  }, []);
+
+  useEffect(() => {
+    async function atualizarUsuarios() {
+      try {
+        const resposta = await fetch("http://localhost:3000/api/users");
+
+        if (!resposta.ok) {
+          return;
+        }
+
+        const usuariosAtualizados = await resposta.json();
+        setUsuarios(
+          usuariosAtualizados.map((usuario: any) => ({
+            id: usuario.id,
+            nome: usuario.nome || usuario.name,
+            email: usuario.email,
+            fotoPerfil: usuario.fotoPerfil || "",
+            lastLoginAt: usuario.lastLoginAt || null,
+            tipo: usuario.tipo || "cliente",
+          })),
+        );
+      } catch (error) {
+        console.error("Erro ao atualizar usuários no admin:", error);
+      }
+    }
+
+    const intervalo = window.setInterval(atualizarUsuarios, 5000);
+
+    return () => window.clearInterval(intervalo);
   }, []);
 
   function abrirFormulario() {
@@ -302,6 +398,77 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
     }
   }
 
+  function renderFormularioProduto() {
+    return (
+      <div
+        className={`form-produto formulario-produto-inline ${
+          fechandoFormulario ? "fechando-formulario" : ""
+        }`}
+      >
+        <h2>{editandoId !== null ? "Editar produto" : "Novo produto"}</h2>
+
+        <input
+          type="text"
+          placeholder="Nome do produto"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Descrição"
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Preço"
+          value={preco}
+          onChange={(e) => setPreco(e.target.value)}
+        />
+
+        <input type="file" accept="image/*" onChange={adicionarImagem} />
+
+        {imagem && (
+          <div className="preview-imagem-container">
+            <img src={imagem} alt="Prévia do produto" className="preview-produto" />
+          </div>
+        )}
+
+        {editandoId !== null ? (
+          <>
+            <button type="button" className="botao-salvar" onClick={salvarEdicao}>
+              Salvar alterações
+            </button>
+            <button type="button" className="botao-cancelar" onClick={fecharFormulario}>
+              Cancelar
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              className={`botao-salvar ${produtoAdicionado ? "produto-adicionado" : ""}`}
+              onClick={adicionarProduto}
+              disabled={produtoAdicionado}
+            >
+              {produtoAdicionado ? "✓ Produto adicionado!" : "Adicionar à Loja"}
+            </button>
+            <button
+              type="button"
+              className="botao-cancelar"
+              onClick={fecharFormulario}
+              disabled={produtoAdicionado}
+            >
+              Fechar
+            </button>
+          </>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="admin">
       {carregando && (
@@ -324,92 +491,7 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
           </button>
         )}
 
-        {mostrarFormulario && (
-          <div
-            className={`form-produto ${
-              fechandoFormulario ? "fechando-formulario" : ""
-            }`}
-          >
-            <h2>{editandoId !== null ? "Editar produto" : "Novo produto"}</h2>
-
-            <input
-              type="text"
-              placeholder="Nome do produto"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
-
-            <input
-              type="text"
-              placeholder="Descrição"
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-            />
-
-            <input
-              type="text"
-              placeholder="Preço"
-              value={preco}
-              onChange={(e) => setPreco(e.target.value)}
-            />
-
-            <input type="file" accept="image/*" onChange={adicionarImagem} />
-
-            {imagem && (
-              <div className="preview-imagem-container">
-                <img
-                  src={imagem}
-                  alt="Prévia do produto"
-                  className="preview-produto"
-                />
-              </div>
-            )}
-
-            {editandoId !== null ? (
-              <>
-                <button
-                  type="button"
-                  className="botao-salvar"
-                  onClick={salvarEdicao}
-                >
-                  Salvar alterações
-                </button>
-
-                <button
-                  type="button"
-                  className="botao-cancelar"
-                  onClick={fecharFormulario}
-                >
-                  Cancelar
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  className={`botao-salvar ${
-                    produtoAdicionado ? "produto-adicionado" : ""
-                  }`}
-                  onClick={adicionarProduto}
-                  disabled={produtoAdicionado}
-                >
-                  {produtoAdicionado
-                    ? "✓ Produto adicionado!"
-                    : "Adicionar à Loja"}
-                </button>
-
-                <button
-                  type="button"
-                  className="botao-cancelar"
-                  onClick={fecharFormulario}
-                  disabled={produtoAdicionado}
-                >
-                  Fechar
-                </button>
-              </>
-            )}
-          </div>
-        )}
+        {mostrarFormulario && editandoId === null && renderFormularioProduto()}
 
         <div className="produtos-admin">
           <h2>Produtos cadastrados</h2>
@@ -428,11 +510,18 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
               >
                 <div className="produto-info">
                   {produto.imagem && (
-                    <img
-                      src={produto.imagem}
-                      alt={produto.nome}
-                      className="produto-imagem-admin"
-                    />
+                    <button
+                      type="button"
+                      className="produto-imagem-admin-botao"
+                      onClick={() => setProdutoImagemSelecionada(produto)}
+                      aria-label={`Visualizar foto de ${produto.nome}`}
+                    >
+                      <img
+                        src={produto.imagem}
+                        alt={`Foto de ${produto.nome}`}
+                        className="produto-imagem-admin"
+                      />
+                    </button>
                   )}
 
                   <h3>{produto.nome}</h3>
@@ -464,12 +553,19 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
                     Excluir
                   </button>
                 </div>
+
+                {mostrarFormulario && editandoId === produto.id && renderFormularioProduto()}
               </div>
             ))
           )}
         </div>
         <div className="usuarios-admin">
-          <h2>Usuários cadastrados</h2>
+          <div className="usuarios-titulo">
+            <h2>Usuários cadastrados</h2>
+            <span className="usuarios-online-total">
+              {usuariosAtivos.length} usuário(s) online
+            </span>
+          </div>
 
           {carregandoDados && usuarios.length === 0 ? (
             <p className="carregando-dados">Carregando usuários...</p>
@@ -478,8 +574,7 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
           ) : (
             <div className="usuarios-lista">
               {usuarios.map((usuario) => {
-                const estaLogado =
-                  usuarioLogado !== null && usuarioLogado.id === usuario.id;
+                const estaLogado = usuariosAtivos.includes(usuario.id);
 
                 return (
                   <div
@@ -489,9 +584,29 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
                     key={usuario.id}
                   >
                     <div className="usuario-info">
-                      <div className="usuario-avatar">
-                        {usuario.nome.charAt(0).toUpperCase()}
-                      </div>
+                      {usuario.fotoPerfil || usuario.nome ? (
+                        <button
+                          type="button"
+                          className="usuario-avatar usuario-avatar-botao"
+                          onClick={() => setFotoUsuarioSelecionada(usuario)}
+                          aria-label={`Visualizar foto de ${usuario.nome}`}
+                        >
+                          {usuario.fotoPerfil ? (
+                            <img
+                              src={usuario.fotoPerfil}
+                              alt={`Foto de ${usuario.nome}`}
+                            />
+                          ) : (
+                            <span className="avatar-inicial-admin">
+                              {usuario.nome.charAt(0).toUpperCase()}
+                            </span>
+                          )}
+                        </button>
+                      ) : (
+                        <div className="usuario-avatar">
+                          {usuario.nome.charAt(0).toUpperCase()}
+                        </div>
+                      )}
 
                       <div>
                         <h3>{usuario.nome}</h3>
@@ -502,6 +617,10 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
                           {usuario.tipo === "admin"
                             ? "Administrador"
                             : "Usuário"}
+                        </span>
+
+                        <span className="usuario-ultimo-login">
+                          Último login: {formatarUltimoLogin(usuario.lastLoginAt)}
                         </span>
                       </div>
                     </div>
@@ -530,6 +649,52 @@ function Admin({ sair, usuarioLogado, onLogout }: Props) {
         >
           {carregando ? "Saindo..." : "Sair"}
         </button>
+
+        {fotoUsuarioSelecionada && (
+          <div className="foto-usuario-admin-overlay" role="presentation">
+            <section className="foto-usuario-admin-modal" role="dialog" aria-modal="true">
+              <button
+                type="button"
+                className="fechar-foto-usuario-admin"
+                aria-label="Fechar foto do usuário"
+                onClick={() => setFotoUsuarioSelecionada(null)}
+              >
+                ×
+              </button>
+              {fotoUsuarioSelecionada.fotoPerfil ? (
+                <img
+                  src={fotoUsuarioSelecionada.fotoPerfil}
+                  alt={`Foto de ${fotoUsuarioSelecionada.nome}`}
+                />
+              ) : (
+                <div className="avatar-inicial-admin-grande">
+                  {fotoUsuarioSelecionada.nome.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <strong>{fotoUsuarioSelecionada.nome}</strong>
+            </section>
+          </div>
+        )}
+
+        {produtoImagemSelecionada && (
+          <div className="foto-usuario-admin-overlay" role="presentation">
+            <section className="foto-usuario-admin-modal" role="dialog" aria-modal="true">
+              <button
+                type="button"
+                className="fechar-foto-usuario-admin"
+                aria-label="Fechar foto do produto"
+                onClick={() => setProdutoImagemSelecionada(null)}
+              >
+                ×
+              </button>
+              <img
+                src={produtoImagemSelecionada.imagem}
+                alt={`Foto de ${produtoImagemSelecionada.nome}`}
+              />
+              <strong>{produtoImagemSelecionada.nome}</strong>
+            </section>
+          </div>
+        )}
       </div>
     </div>
   );

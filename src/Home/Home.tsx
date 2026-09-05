@@ -16,19 +16,40 @@ type Usuario = {
   tipo?: string;
 };
 
-type ItemCarrinho = {
-  produto: Produto;
-  quantidade: number;
-};
-
 type Props = {
   sair: () => void;
   onInicioSaida: () => void;
   usuarioLogado: Usuario | null;
   onLogout: () => void;
+  carrinho: {
+    produto: Produto;
+    quantidade: number;
+  }[];
+  onCarrinhoChange: (carrinho: { produto: Produto; quantidade: number }[]) => void;
 };
 
-function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
+function obterSaudacao(): string {
+  const horaAtual = new Date().getHours();
+
+  if (horaAtual >= 5 && horaAtual < 12) {
+    return "Bom dia";
+  }
+
+  if (horaAtual >= 12 && horaAtual < 18) {
+    return "Boa tarde";
+  }
+
+  return "Boa noite";
+}
+
+function Home({
+  sair,
+  onInicioSaida,
+  usuarioLogado,
+  onLogout,
+  carrinho,
+  onCarrinhoChange,
+}: Props) {
   const [carregando, setCarregando] = useState(false);
 
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -40,16 +61,10 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
   const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(
     null,
   );
+  const [quantidadeSelecionada, setQuantidadeSelecionada] = useState(1);
 
   // =========================
-  // CARRINHO
-  // =========================
-
-  const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
-
-  const [mostrarCarrinho, setMostrarCarrinho] = useState(false);
-
-  const [fechandoCarrinho, setFechandoCarrinho] = useState(false);
+  const [produtoAdicionado, setProdutoAdicionado] = useState(false);
 
   // =========================
   // CARREGAR PRODUTOS E USUÁRIO
@@ -83,24 +98,9 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
 
   useEffect(() => {
     if (!usuarioAtual?.email) {
-      setCarrinho([]);
-      return;
+      onCarrinhoChange([]);
     }
-
-    setCarrinho([]);
-  }, [usuarioAtual]);
-
-  // =========================
-  // SALVAR CARRINHO
-  // =========================
-
-  function salvarCarrinho(carrinhoAtualizado: ItemCarrinho[]) {
-    if (!usuarioAtual?.email) {
-      return;
-    }
-
-    setCarrinho(carrinhoAtualizado);
-  }
+  }, [usuarioAtual, onCarrinhoChange]);
 
   // =========================
   // ADICIONAR AO CARRINHO
@@ -114,86 +114,23 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
     );
 
     if (itemExistente) {
-      itemExistente.quantidade += 1;
+      itemExistente.quantidade += quantidadeSelecionada;
     } else {
       carrinhoAtualizado.push({
         produto,
-        quantidade: 1,
+        quantidade: quantidadeSelecionada,
       });
     }
 
-    salvarCarrinho(carrinhoAtualizado);
+    onCarrinhoChange(carrinhoAtualizado);
+    setProdutoAdicionado(true);
+
+    fecharModal();
+
+    window.setTimeout(() => {
+      setProdutoAdicionado(false);
+    }, 1300);
   }
-
-  // =========================
-  // AUMENTAR QUANTIDADE
-  // =========================
-
-  function aumentarQuantidade(id: number) {
-    const carrinhoAtualizado = carrinho.map((item) => {
-      if (item.produto.id === id) {
-        return {
-          ...item,
-          quantidade: item.quantidade + 1,
-        };
-      }
-
-      return item;
-    });
-
-    salvarCarrinho(carrinhoAtualizado);
-  }
-
-  // =========================
-  // DIMINUIR QUANTIDADE
-  // =========================
-
-  function diminuirQuantidade(id: number) {
-    const carrinhoAtualizado = carrinho
-      .map((item) => {
-        if (item.produto.id === id) {
-          return {
-            ...item,
-            quantidade: item.quantidade - 1,
-          };
-        }
-
-        return item;
-      })
-      .filter((item) => item.quantidade > 0);
-
-    salvarCarrinho(carrinhoAtualizado);
-  }
-
-  // =========================
-  // REMOVER DO CARRINHO
-  // =========================
-
-  function removerDoCarrinho(id: number) {
-    const carrinhoAtualizado = carrinho.filter(
-      (item) => item.produto.id !== id,
-    );
-
-    salvarCarrinho(carrinhoAtualizado);
-  }
-
-  // =========================
-  // QUANTIDADE DE ITENS
-  // =========================
-
-  const quantidadeCarrinho = carrinho.reduce(
-    (total, item) => total + item.quantidade,
-    0,
-  );
-
-  // =========================
-  // TOTAL
-  // =========================
-
-  const totalCarrinho = carrinho.reduce(
-    (total, item) => total + item.produto.preco * item.quantidade,
-    0,
-  );
 
   // =========================
   // SAIR
@@ -205,9 +142,7 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
 
     // Fecha qualquer elemento aberto antes da animação
     setProdutoSelecionado(null);
-    setMostrarCarrinho(false);
     setFechandoModal(false);
-    setFechandoCarrinho(false);
 
     setTimeout(() => {
       onLogout();
@@ -221,6 +156,7 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
 
   function visualizarProduto(produto: Produto) {
     setFechandoModal(false);
+    setQuantidadeSelecionada(1);
 
     setProdutoSelecionado(produto);
   }
@@ -234,33 +170,10 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
 
     setTimeout(() => {
       setProdutoSelecionado(null);
+      setQuantidadeSelecionada(1);
 
       setFechandoModal(false);
     }, 250);
-  }
-
-  // =========================
-  // ABRIR CARRINHO
-  // =========================
-
-  function abrirCarrinho() {
-    setFechandoCarrinho(false);
-
-    setMostrarCarrinho(true);
-  }
-
-  // =========================
-  // FECHAR CARRINHO
-  // =========================
-
-  function fecharCarrinho() {
-    setFechandoCarrinho(true);
-
-    setTimeout(() => {
-      setMostrarCarrinho(false);
-
-      setFechandoCarrinho(false);
-    }, 300);
   }
 
   return (
@@ -290,7 +203,7 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
 
             <div className="cabecalho-home">
               <h1>
-                Bem-vindo,
+                {obterSaudacao()},
                 {usuarioLogado?.nome && (
                   <span className="nome-usuario">
                     {usuarioLogado.nome.toUpperCase()}
@@ -299,23 +212,6 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
                 !
               </h1>
 
-              {/* =========================
-                  BOTÃO CARRINHO
-              ========================= */}
-
-              <button
-                type="button"
-                className="botao-carrinho"
-                onClick={abrirCarrinho}
-                aria-label="Abrir carrinho"
-              >
-                🛒
-                {quantidadeCarrinho > 0 && (
-                  <span className="contador-carrinho">
-                    {quantidadeCarrinho}
-                  </span>
-                )}
-              </button>
             </div>
 
             <h3>Produtos</h3>
@@ -405,13 +301,48 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
 
                   {/* ADICIONAR AO CARRINHO */}
 
-                  <button
-                    type="button"
-                    className="botao-adicionar-carrinho"
-                    onClick={() => adicionarAoCarrinho(produtoSelecionado)}
-                  >
-                    🛒 Adicionar ao carrinho
-                  </button>
+                  <div className="acoes-compra-modal">
+                    <button
+                      type="button"
+                      className={`botao-adicionar-carrinho ${
+                        produtoAdicionado ? "produto-adicionado" : ""
+                      }`}
+                      onClick={() => adicionarAoCarrinho(produtoSelecionado)}
+                      disabled={produtoAdicionado}
+                    >
+                      {produtoAdicionado
+                        ? "✓ Adicionado"
+                        : "🛒 Adicionar ao carrinho"}
+                    </button>
+
+                    <div className="seletor-quantidade-modal">
+                      <button
+                        type="button"
+                        aria-label="Diminuir quantidade"
+                        onClick={() =>
+                          setQuantidadeSelecionada((quantidade) =>
+                            Math.max(1, quantidade - 1),
+                          )
+                        }
+                        disabled={produtoAdicionado}
+                      >
+                        −
+                      </button>
+
+                      <span aria-live="polite">{quantidadeSelecionada}</span>
+
+                      <button
+                        type="button"
+                        aria-label="Aumentar quantidade"
+                        onClick={() =>
+                          setQuantidadeSelecionada((quantidade) => quantidade + 1)
+                        }
+                        disabled={produtoAdicionado}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
 
                   {/* FECHAR */}
 
@@ -427,168 +358,14 @@ function Home({ sair, onInicioSaida, usuarioLogado, onLogout }: Props) {
             </div>
           )}
 
-          {/* ==================================================
-              CARRINHO LATERAL
-          ================================================== */}
-
-          {mostrarCarrinho && (
-            <div
-              className={`carrinho-overlay ${
-                fechandoCarrinho ? "fechando" : ""
-              }`}
-            >
-              <div
-                className={`carrinho-lateral ${
-                  fechandoCarrinho ? "fechando" : ""
-                }`}
-              >
-                {/* CABEÇALHO */}
-
-                <div className="cabecalho-carrinho">
-                  <div>
-                    <h2>🛒 Meu carrinho</h2>
-
-                    <span>
-                      {quantidadeCarrinho}{" "}
-                      {quantidadeCarrinho === 1 ? "item" : "itens"}
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="botao-fechar-carrinho"
-                    onClick={fecharCarrinho}
-                    aria-label="Fechar carrinho"
-                  >
-                    ×
-                  </button>
-                </div>
-
-                {/* =========================
-                    CARRINHO VAZIO
-                ========================= */}
-
-                {carrinho.length === 0 ? (
-                  <div className="carrinho-vazio">
-                    <span>🛒</span>
-
-                    <h2>Seu carrinho está vazio</h2>
-
-                    <p>Adicione alguns produtos para começar suas compras.</p>
-
-                    <button
-                      type="button"
-                      className="botao-continuar-comprando"
-                      onClick={fecharCarrinho}
-                    >
-                      Continuar comprando
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    {/* =========================
-                        ITENS
-                    ========================= */}
-
-                    <div className="itens-carrinho">
-                      {carrinho.map((item) => (
-                        <div className="item-carrinho" key={item.produto.id}>
-                          {/* IMAGEM */}
-
-                          <div className="item-carrinho-imagem">
-                            {item.produto.imagem ? (
-                              <img
-                                src={item.produto.imagem}
-                                alt={item.produto.nome}
-                              />
-                            ) : (
-                              <span>📦</span>
-                            )}
-                          </div>
-
-                          {/* INFORMAÇÕES */}
-
-                          <div className="item-carrinho-info">
-                            <h3>{item.produto.nome}</h3>
-
-                            <strong>
-                              {item.produto.preco.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}
-                            </strong>
-
-                            {/* QUANTIDADE */}
-
-                            <div className="controle-quantidade">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  diminuirQuantidade(item.produto.id)
-                                }
-                              >
-                                −
-                              </button>
-
-                              <span>{item.quantidade}</span>
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  aumentarQuantidade(item.produto.id)
-                                }
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* REMOVER */}
-
-                          <button
-                            type="button"
-                            className="botao-remover-carrinho"
-                            onClick={() => removerDoCarrinho(item.produto.id)}
-                            aria-label={`Remover ${item.produto.nome}`}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* =========================
-                        RESUMO
-                    ========================= */}
-
-                    <div className="resumo-carrinho">
-                      <div className="linha-resumo">
-                        <span>Itens</span>
-
-                        <strong>{quantidadeCarrinho}</strong>
-                      </div>
-
-                      <div className="linha-resumo total-carrinho">
-                        <span>Total</span>
-
-                        <strong>
-                          {totalCarrinho.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                        </strong>
-                      </div>
-
-                      <button type="button" className="botao-finalizar-compra">
-                        Finalizar compra
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
         </>
+      )}
+
+      {produtoAdicionado && (
+        <div className="aviso-produto-adicionado" role="status">
+          <span className="check-produto-adicionado">✓</span>
+          Produto adicionado ao carrinho
+        </div>
       )}
     </div>
   );

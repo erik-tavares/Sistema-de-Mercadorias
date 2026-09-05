@@ -1,10 +1,15 @@
 # Dependencies
 node_modules/
 backTeste/node_modules/
+.pnp/
+.pnp.js
 
 # Build output
 /dist/
 backTeste/dist/
+dist/
+build/
+coverage/
 *.tsbuildinfo
 
 # Environment variables and secrets
@@ -15,6 +20,11 @@ backTeste/.env.*
 !.env.example
 !backTeste/.env.example
 
+# Private keys and certificates
+*.pem
+*.key
+*.crt
+
 # Logs
 logs/
 *.log
@@ -23,6 +33,14 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Test and tooling caches
+.cache/
+.temp/
+.turbo/
+.vite/
+playwright-report/
+test-results/
 
 # Local editor settings
 .vscode/
@@ -38,8 +56,10 @@ lerna-debug.log*
 # OS / temporary files
 Thumbs.db
 
-# Prisma generated local files (keep only if not intended to be committed)
-# backTeste/src/generated/
+# Prisma generated clients and local generated output
+backTeste/generated/
+backTeste/src/generated/
+backTeste/.prisma/
 
 # Project local folders not meant for GitHub
 backTeste/.cache/

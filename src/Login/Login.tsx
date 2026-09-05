@@ -35,9 +35,16 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
         }
 
         const usuarios = await resposta.json();
-        const usuarioSalvo = usuarios.find(
-          (usuario: any) => usuario.rememberedEmail || usuario.rememberedPassword,
-        );
+        const usuarioSalvo = usuarios
+          .filter(
+            (usuario: any) =>
+              usuario.rememberedEmail || usuario.rememberedPassword,
+          )
+          .sort(
+            (usuarioA: any, usuarioB: any) =>
+              new Date(usuarioB.rememberedAt || 0).getTime() -
+              new Date(usuarioA.rememberedAt || 0).getTime(),
+          )[0];
 
         if (!usuarioSalvo) {
           return;

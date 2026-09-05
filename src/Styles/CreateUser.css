@@ -12,8 +12,9 @@
   padding: 30px;
   background-color: #1e1e1e;
   border-radius: 10px;
-  width: 380px;
-  padding-right: 55px;
+  width: min(100%, 380px);
+  box-sizing: border-box;
+  padding-right: 30px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
 }
 
@@ -53,6 +54,40 @@
   margin-bottom: 25px;
 }
 
+.create-user-container .input-group label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 0 5px;
+  background: transparent;
+  color: #aaa;
+  font-size: 16px;
+  font-weight: 700;
+  pointer-events: none;
+  transition: 0.3s ease;
+}
+
+.create-user-container .input-group:focus-within label,
+.create-user-container .input-group.preenchido label {
+  top: -16px;
+  background: transparent;
+  color: #4a90e2;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.create-user-container .input-group input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 45px;
+  padding: 10px 12px;
+  background: #2a2a2a;
+  border: 2px solid #333;
+  border-radius: 7px;
+  color: white;
+  font-size: 16px;
+}
+
 .dark .input-group {
   color: white;
 }
@@ -60,16 +95,16 @@
   color: white;
 }
 
-.create-user-container .input-group input:focus ~ label,
-.create-user-container .input-group input:valid ~ label {
-  top: -15px;
-  left: 0;
-  font-size: 12px;
+.create-user-container .input-group:focus-within label,
+.create-user-container .input-group.preenchido label {
+  top: -16px;
+  left: 12px;
+  font-size: 13px;
 }
 
 .toggle-senhaConfirma {
   position: absolute;
-  right: -10px;
+  right: 10px;
   top: 12px;
   transform: none;
   background: none;
@@ -153,4 +188,34 @@
 
 .botao-criar:hover {
   opacity: 0.8;
+}
+
+@media (max-width: 420px) {
+  .create-user {
+    min-height: 100dvh;
+    padding: 18px 12px;
+    box-sizing: border-box;
+  }
+
+  .create-user-container {
+    width: 100%;
+    gap: 18px;
+    padding: 22px 18px;
+  }
+
+  .create-user-container h1 {
+    margin-bottom: 18px;
+    font-size: 26px;
+  }
+
+  .create-user-buttons {
+    flex-direction: column-reverse;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .botao-criar,
+  .botao-voltar {
+    width: 100%;
+  }
 }

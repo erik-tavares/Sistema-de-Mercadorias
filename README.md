@@ -16,8 +16,10 @@ Aplicação full-stack para autenticação, cadastro de usuários, painel admini
 .
 ├── backTeste/
 │   ├── prisma/
+│   │   ├── migrations/
+│   │   └── schema.prisma
 │   ├── src/
-│   ├── .env
+│   ├── .env.example
 │   ├── package.json
 │   └── ...
 ├── src/
@@ -70,7 +72,7 @@ cd ..
 
 ## Configuração do ambiente
 
-Crie um arquivo `.env` dentro da pasta `backTeste` com a URL do banco PostgreSQL:
+Crie um arquivo `.env` dentro da pasta `backTeste` com a URL do banco PostgreSQL. Você pode usar o `.env.example` como referência:
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require"
@@ -83,6 +85,8 @@ DATABASE_URL="postgresql://postgres:senha@ep-exemplo.us-east-1.aws.neon.tech/neo
 ```
 
 > Esse arquivo não deve ser enviado para o GitHub.
+
+O `.env.example` pode ser enviado ao GitHub, desde que contenha apenas valores de exemplo e nenhum segredo real.
 
 ## Como rodar o projeto
 
@@ -126,6 +130,8 @@ npx prisma generate
 
 Esses comandos aplicam as migrações e geram o cliente Prisma atualizado.
 
+As migrations em `backTeste/prisma/migrations` devem ser versionadas no GitHub. Os clientes e arquivos gerados pelo Prisma ficam fora do versionamento conforme o `.gitignore`.
+
 ## Build de produção
 
 Na raiz do projeto:
@@ -137,8 +143,10 @@ npm run build
 ## Funcionalidades principais
 
 - login com validação de e-mail e senha
+- bloqueio de login duplicado enquanto a sessão anterior estiver ativa
 - logout com animação e transição visual
 - lembrar último login salvo no banco
+- registro do último login individual de cada usuário
 - tema escuro e claro persistido por usuário
 - painel administrativo para usuários e produtos
 - cadastro e listagem de produtos
