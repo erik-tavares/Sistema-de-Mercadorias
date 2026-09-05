@@ -1,5 +1,5 @@
 .home {
-  min-height: 100vh;
+  /* min-height: 100vh; */
   width: 100%;
   box-sizing: border-box;
   overflow: visible;
@@ -234,7 +234,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle at center, rgba(74, 144, 226, 0.18), rgba(18, 18, 18, 0.96));
+  background: radial-gradient(
+    circle at center,
+    rgba(74, 144, 226, 0.18),
+    rgba(18, 18, 18, 0.96)
+  );
   color: white;
   animation: entradaLoading 0.5s ease forwards;
 }
