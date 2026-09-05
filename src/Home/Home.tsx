@@ -16,13 +16,15 @@ type Usuario = {
   tipo?: string;
 };
 
+type ItemCarrinho = {
+  produto: Produto;
+  quantidade: number;
+};
+
 type Props = {
   usuarioLogado: Usuario | null;
-  carrinho: {
-    produto: Produto;
-    quantidade: number;
-  }[];
-  onCarrinhoChange: (carrinho: { produto: Produto; quantidade: number }[]) => void;
+  carrinho: ItemCarrinho[];
+  onCarrinhoChange: (carrinho: ItemCarrinho[]) => void;
 };
 
 function obterSaudacao(): string {
@@ -39,44 +41,65 @@ function obterSaudacao(): string {
   return "Boa noite";
 }
 
-function Home({
-  usuarioLogado,
-  carrinho,
-  onCarrinhoChange,
-}: Props) {
+function Home({ usuarioLogado, carrinho, onCarrinhoChange }: Props) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
 
-  const [usuarioAtual, setUsuarioAtual] = useState<Usuario | null>(usuarioLogado);
+  const [usuarioAtual, setUsuarioAtual] = useState<Usuario | null>(
+    usuarioLogado,
+  );
 
   const [fechandoModal, setFechandoModal] = useState(false);
 
   const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(
     null,
   );
+
   const [quantidadeSelecionada, setQuantidadeSelecionada] = useState(1);
 
-  // =========================
   const [produtoAdicionado, setProdutoAdicionado] = useState(false);
 
   // =========================
-  // CARREGAR PRODUTOS E USUÁRIO
+  // PAGINAÇÃO
+  // =========================
+
+  const PRODUTOS_POR_PAGINA = 6;
+
+  const [paginaAtual, setPaginaAtual] = useState(1);
+
+  const totalPaginas = Math.ceil(produtos.length / PRODUTOS_POR_PAGINA);
+
+  const indiceInicial = (paginaAtual - 1) * PRODUTOS_POR_PAGINA;
+
+  const indiceFinal = indiceInicial + PRODUTOS_POR_PAGINA;
+
+  const produtosDaPagina = produtos.slice(indiceInicial, indiceFinal);
+
+  // =========================
+  // CARREGAR USUÁRIO
   // =========================
 
   useEffect(() => {
     setUsuarioAtual(usuarioLogado);
   }, [usuarioLogado]);
 
+  // =========================
+  // CARREGAR PRODUTOS
+  // =========================
+
   useEffect(() => {
     async function carregarDados() {
       try {
         const resposta = await fetch("http://localhost:3000/api/products");
+
         const produtosSalvos = resposta.ok ? await resposta.json() : [];
 
-        setProdutos(produtosSalvos.map((produto: any) => ({
+        const produtosFormatados = produtosSalvos.map((produto: any) => ({
           ...produto,
           preco: Number(produto.preco),
           imagem: produto.imagem || "",
-        })));
+        }));
+
+        setProdutos(produtosFormatados);
       } catch (erro) {
         console.error("Erro ao buscar produtos:", erro);
       }
@@ -86,7 +109,23 @@ function Home({
   }, []);
 
   // =========================
-  // CARREGAR CARRINHO DO USUÁRIO
+  // CORRIGIR PÁGINA ATUAL
+  // CASO PRODUTOS SEJAM REMOVIDOS
+  // =========================
+
+  useEffect(() => {
+    if (totalPaginas === 0) {
+      setPaginaAtual(1);
+      return;
+    }
+
+    if (paginaAtual > totalPaginas) {
+      setPaginaAtual(totalPaginas);
+    }
+  }, [totalPaginas, paginaAtual]);
+
+  // =========================
+  // CARRINHO
   // =========================
 
   useEffect(() => {
@@ -116,6 +155,7 @@ function Home({
     }
 
     onCarrinhoChange(carrinhoAtualizado);
+
     setProdutoAdicionado(true);
 
     fecharModal();
@@ -132,23 +172,43 @@ function Home({
   function visualizarProduto(produto: Produto) {
     setFechandoModal(false);
     setQuantidadeSelecionada(1);
-
     setProdutoSelecionado(produto);
   }
 
   // =========================
-  // FECHAR MODAL PRODUTO
+  // FECHAR MODAL
   // =========================
 
   function fecharModal() {
     setFechandoModal(true);
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       setProdutoSelecionado(null);
       setQuantidadeSelecionada(1);
-
       setFechandoModal(false);
     }, 250);
+  }
+
+  // =========================
+  // TROCAR PÁGINA
+  // =========================
+
+  function mudarPagina(pagina: number) {
+    if (pagina < 1 || pagina > totalPaginas || pagina === paginaAtual) {
+      return;
+    }
+
+    setPaginaAtual(pagina);
+
+    // Volta suavemente para o topo dos produtos
+    const areaProdutos = document.querySelector(".produtos-container");
+
+    if (areaProdutos) {
+      areaProdutos.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   }
 
   return (
@@ -158,155 +218,212 @@ function Home({
       ========================= */}
 
       <div className="home-content">
-            {/* =========================
-                CABEÇALHO
-            ========================= */}
+        {/* =========================
+            CABEÇALHO
+        ========================= */}
 
-            <div className="cabecalho-home">
-              <h1>
-                {obterSaudacao()},
-                {usuarioLogado?.nome && (
-                  <span className="nome-usuario">
-                    {usuarioLogado.nome.toUpperCase()}
-                  </span>
-                )}
-                !
-              </h1>
+        <div className="cabecalho-home">
+          <h1>
+            {obterSaudacao()},{" "}
+            {usuarioAtual?.nome && (
+              <span className="nome-usuario">
+                {usuarioAtual.nome.toUpperCase()}
+              </span>
+            )}
+            !
+          </h1>
+        </div>
 
+        <h3>Produtos</h3>
+
+        {/* =========================
+            PRODUTOS
+        ========================= */}
+
+        <div className="produtos-container" key={paginaAtual}>
+          {produtos.length === 0 ? (
+            <h3>Nenhum produto disponível.</h3>
+          ) : (
+            produtosDaPagina.map((produto) => (
+              <div className="produto-card" key={produto.id}>
+                <h2>{produto.nome}</h2>
+
+                <p>{produto.descricao}</p>
+
+                <strong>
+                  {produto.preco.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </strong>
+
+                <button
+                  type="button"
+                  className="botao-visualizar"
+                  onClick={() => visualizarProduto(produto)}
+                >
+                  Visualizar
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* =========================
+            PAGINAÇÃO
+        ========================= */}
+
+        {totalPaginas > 1 && (
+          <div className="paginacao-produtos">
+            {/* ANTERIOR */}
+
+            <button
+              type="button"
+              className="botao-paginacao botao-anterior"
+              onClick={() => mudarPagina(paginaAtual - 1)}
+              disabled={paginaAtual === 1}
+              aria-label="Página anterior"
+            >
+              ‹
+            </button>
+
+            {/* NÚMEROS */}
+
+            <div className="numeros-paginacao">
+              {Array.from({ length: totalPaginas }, (_, index) => {
+                const pagina = index + 1;
+
+                return (
+                  <button
+                    type="button"
+                    key={pagina}
+                    className={`botao-pagina ${
+                      paginaAtual === pagina ? "pagina-ativa" : ""
+                    }`}
+                    onClick={() => mudarPagina(pagina)}
+                  >
+                    {pagina}
+                  </button>
+                );
+              })}
             </div>
 
-            <h3>Produtos</h3>
+            {/* PRÓXIMA */}
 
-            {/* =========================
-                PRODUTOS
-            ========================= */}
+            <button
+              type="button"
+              className="botao-paginacao botao-proxima"
+              onClick={() => mudarPagina(paginaAtual + 1)}
+              disabled={paginaAtual === totalPaginas}
+              aria-label="Próxima página"
+            >
+              ›
+            </button>
+          </div>
+        )}
+      </div>
 
-            <div className="produtos-container">
-              {produtos.length === 0 ? (
-                <h3>Nenhum produto disponível.</h3>
+      {/* ==================================================
+          MODAL PRODUTO
+      ================================================== */}
+
+      {produtoSelecionado && (
+        <div className={`modal-overlay ${fechandoModal ? "fechando" : ""}`}>
+          <div className={`modal-produto ${fechandoModal ? "fechando" : ""}`}>
+            {/* IMAGEM */}
+
+            <div className="modal-imagem">
+              {produtoSelecionado.imagem ? (
+                <img
+                  src={produtoSelecionado.imagem}
+                  alt={produtoSelecionado.nome}
+                  className="modal-produto-imagem"
+                />
               ) : (
-                produtos.map((produto) => (
-                  <div className="produto-card" key={produto.id}>
-                    <h2>{produto.nome}</h2>
-
-                    <p>{produto.descricao}</p>
-
-                    <strong>
-                      {produto.preco.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </strong>
-
-                    <button
-                      type="button"
-                      className="botao-visualizar"
-                      onClick={() => visualizarProduto(produto)}
-                    >
-                      Visualizar
-                    </button>
-                  </div>
-                ))
+                <span>📦</span>
               )}
             </div>
 
-          </div>
+            {/* CONTEÚDO */}
 
-          {/* ==================================================
-              MODAL PRODUTO
-          ================================================== */}
+            <div className="modal-conteudo">
+              <h2>{produtoSelecionado.nome}</h2>
 
-          {produtoSelecionado && (
-            <div className={`modal-overlay ${fechandoModal ? "fechando" : ""}`}>
-              <div
-                className={`modal-produto ${fechandoModal ? "fechando" : ""}`}
-              >
-                {/* IMAGEM */}
+              <p>{produtoSelecionado.descricao}</p>
 
-                <div className="modal-imagem">
-                  {produtoSelecionado.imagem ? (
-                    <img
-                      src={produtoSelecionado.imagem}
-                      alt={produtoSelecionado.nome}
-                      className="modal-produto-imagem"
-                    />
-                  ) : (
-                    <span>📦</span>
-                  )}
-                </div>
+              <strong>
+                {produtoSelecionado.preco.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </strong>
 
-                {/* CONTEÚDO */}
+              {/* =========================
+                  AÇÕES DE COMPRA
+              ========================= */}
 
-                <div className="modal-conteudo">
-                  <h2>{produtoSelecionado.nome}</h2>
+              <div className="acoes-compra-modal">
+                <button
+                  type="button"
+                  className={`botao-adicionar-carrinho ${
+                    produtoAdicionado ? "produto-adicionado" : ""
+                  }`}
+                  onClick={() => adicionarAoCarrinho(produtoSelecionado)}
+                  disabled={produtoAdicionado}
+                >
+                  {produtoAdicionado
+                    ? "✓ Adicionado"
+                    : "🛒 Adicionar ao carrinho"}
+                </button>
 
-                  <p>{produtoSelecionado.descricao}</p>
+                {/* QUANTIDADE */}
 
-                  <strong>
-                    {produtoSelecionado.preco.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </strong>
+                <div className="seletor-quantidade-modal">
+                  <button
+                    type="button"
+                    aria-label="Diminuir quantidade"
+                    onClick={() =>
+                      setQuantidadeSelecionada((quantidade) =>
+                        Math.max(1, quantidade - 1),
+                      )
+                    }
+                    disabled={produtoAdicionado}
+                  >
+                    −
+                  </button>
 
-                  {/* ADICIONAR AO CARRINHO */}
-
-                  <div className="acoes-compra-modal">
-                    <button
-                      type="button"
-                      className={`botao-adicionar-carrinho ${
-                        produtoAdicionado ? "produto-adicionado" : ""
-                      }`}
-                      onClick={() => adicionarAoCarrinho(produtoSelecionado)}
-                      disabled={produtoAdicionado}
-                    >
-                      {produtoAdicionado
-                        ? "✓ Adicionado"
-                        : "🛒 Adicionar ao carrinho"}
-                    </button>
-
-                    <div className="seletor-quantidade-modal">
-                      <button
-                        type="button"
-                        aria-label="Diminuir quantidade"
-                        onClick={() =>
-                          setQuantidadeSelecionada((quantidade) =>
-                            Math.max(1, quantidade - 1),
-                          )
-                        }
-                        disabled={produtoAdicionado}
-                      >
-                        −
-                      </button>
-
-                      <span aria-live="polite">{quantidadeSelecionada}</span>
-
-                      <button
-                        type="button"
-                        aria-label="Aumentar quantidade"
-                        onClick={() =>
-                          setQuantidadeSelecionada((quantidade) => quantidade + 1)
-                        }
-                        disabled={produtoAdicionado}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* FECHAR */}
+                  <span aria-live="polite">{quantidadeSelecionada}</span>
 
                   <button
                     type="button"
-                    className="botao-fechar-modal"
-                    onClick={fecharModal}
+                    aria-label="Aumentar quantidade"
+                    onClick={() =>
+                      setQuantidadeSelecionada((quantidade) => quantidade + 1)
+                    }
+                    disabled={produtoAdicionado}
                   >
-                    Fechar
+                    +
                   </button>
                 </div>
               </div>
+
+              {/* FECHAR */}
+
+              <button
+                type="button"
+                className="botao-fechar-modal"
+                onClick={fecharModal}
+              >
+                Fechar
+              </button>
             </div>
-          )}
+          </div>
+        </div>
+      )}
+
+      {/* =========================
+          AVISO
+      ========================= */}
 
       {produtoAdicionado && (
         <div className="aviso-produto-adicionado" role="status">

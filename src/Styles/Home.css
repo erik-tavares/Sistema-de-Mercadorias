@@ -1360,6 +1360,236 @@
   }
 }
 
+/* ==================================================
+   PAGINAÇÃO DOS PRODUTOS
+================================================== */
+
+.paginacao-produtos {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 35px 0 20px;
+}
+
+/* =========================
+   NÚMEROS
+========================= */
+
+.numeros-paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* =========================
+   BOTÃO DE PÁGINA
+========================= */
+
+.botao-pagina {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(74, 144, 226, 0.35);
+  border-radius: 8px;
+
+  background-color: #1e1e1e;
+  color: white;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.botao-pagina:hover {
+  background-color: #2a2a2a;
+  border-color: #4a90e2;
+  color: white;
+
+  transform: translateY(-2px);
+}
+
+/* =========================
+   PÁGINA ATIVA
+========================= */
+
+.botao-pagina.pagina-ativa {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  color: white;
+
+  box-shadow: 0 5px 15px rgba(74, 144, 226, 0.35);
+
+  transform: scale(1.05);
+}
+
+.botao-pagina.pagina-ativa:hover {
+  background-color: #357abd;
+  border-color: #357abd;
+}
+
+/* =========================
+   BOTÕES ‹ E ›
+========================= */
+
+.botao-paginacao {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(74, 144, 226, 0.35);
+  border-radius: 8px;
+
+  background-color: #1e1e1e;
+  color: white;
+
+  font-size: 28px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.botao-paginacao:hover:not(:disabled) {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+
+  transform: scale(1.08);
+}
+
+.botao-paginacao:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+/* =========================
+   BOTÃO DESABILITADO
+========================= */
+
+.botao-paginacao:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==================================================
+   ANIMAÇÃO DOS PRODUTOS AO TROCAR DE PÁGINA
+================================================== */
+
+.produtos-container {
+  animation: trocarPaginaProdutos 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes trocarPaginaProdutos {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================================================
+   TEMA CLARO
+================================================== */
+
+.light .botao-pagina,
+.light .botao-paginacao {
+  background-color: #ffffff;
+  color: #172033;
+  border-color: #dbe3ee;
+}
+
+.light .botao-pagina:hover,
+.light .botao-paginacao:hover:not(:disabled) {
+  background-color: #eef5ff;
+  color: #357abd;
+  border-color: #4a90e2;
+}
+
+.light .botao-pagina.pagina-ativa {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  color: white;
+}
+
+/* ==================================================
+   RESPONSIVIDADE
+================================================== */
+
+@media (max-width: 768px) {
+  .paginacao-produtos {
+    margin-top: 25px;
+    gap: 6px;
+  }
+
+  .numeros-paginacao {
+    gap: 5px;
+  }
+
+  .botao-pagina,
+  .botao-paginacao {
+    width: 36px;
+    height: 36px;
+  }
+
+  .botao-paginacao {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .paginacao-produtos {
+    gap: 4px;
+  }
+
+  .numeros-paginacao {
+    gap: 4px;
+  }
+
+  .botao-pagina,
+  .botao-paginacao {
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
+  }
+
+  .botao-pagina {
+    font-size: 13px;
+  }
+
+  .botao-paginacao {
+    font-size: 22px;
+  }
+}
+
 /* =========================
    RESPONSIVIDADE
 ========================= */
