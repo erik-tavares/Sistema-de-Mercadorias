@@ -682,16 +682,8 @@ function App() {
             {pagina === "home" && (
               <Home
                 usuarioLogado={usuarioLogado}
-                onLogout={fazerLogout}
                 carrinho={carrinho}
                 onCarrinhoChange={setCarrinho}
-                sair={() => {
-                  setTimeout(() => {
-                    setPagina("login");
-                    setSaindo(false);
-                  }, 1500);
-                }}
-                onInicioSaida={() => setSaindo(true)}
               />
             )}
 

@@ -17,10 +17,7 @@ type Usuario = {
 };
 
 type Props = {
-  sair: () => void;
-  onInicioSaida: () => void;
   usuarioLogado: Usuario | null;
-  onLogout: () => void;
   carrinho: {
     produto: Produto;
     quantidade: number;
@@ -43,15 +40,10 @@ function obterSaudacao(): string {
 }
 
 function Home({
-  sair,
-  onInicioSaida,
   usuarioLogado,
-  onLogout,
   carrinho,
   onCarrinhoChange,
 }: Props) {
-  const [carregando, setCarregando] = useState(false);
-
   const [produtos, setProdutos] = useState<Produto[]>([]);
 
   const [usuarioAtual, setUsuarioAtual] = useState<Usuario | null>(usuarioLogado);
@@ -133,24 +125,6 @@ function Home({
   }
 
   // =========================
-  // SAIR
-  // =========================
-
-  function handleSair() {
-    onInicioSaida();
-    setCarregando(true);
-
-    // Fecha qualquer elemento aberto antes da animação
-    setProdutoSelecionado(null);
-    setFechandoModal(false);
-
-    setTimeout(() => {
-      onLogout();
-      sair();
-    }, 2000);
-  }
-
-  // =========================
   // VISUALIZAR PRODUTO
   // =========================
 
@@ -177,26 +151,12 @@ function Home({
   }
 
   return (
-    <div className={`home ${carregando ? "saindo" : ""}`}>
-      {/* =========================
-          LOADING
-      ========================= */}
-
-      {carregando && (
-        <div className="loading-screen">
-          <div className="loader"></div>
-
-          <p>Saindo</p>
-        </div>
-      )}
-
+    <div className="home">
       {/* =========================
           CONTEÚDO PRINCIPAL
       ========================= */}
 
-      {!carregando && (
-        <>
-          <div className="home-content">
+      <div className="home-content">
             {/* =========================
                 CABEÇALHO
             ========================= */}
@@ -249,17 +209,6 @@ function Home({
               )}
             </div>
 
-            {/* =========================
-                BOTÃO SAIR
-            ========================= */}
-
-            <button
-              className="botao-sair"
-              onClick={handleSair}
-              disabled={carregando}
-            >
-              Sair
-            </button>
           </div>
 
           {/* ==================================================
@@ -357,9 +306,6 @@ function Home({
               </div>
             </div>
           )}
-
-        </>
-      )}
 
       {produtoAdicionado && (
         <div className="aviso-produto-adicionado" role="status">
