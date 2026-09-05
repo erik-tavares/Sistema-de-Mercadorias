@@ -355,7 +355,6 @@
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
   color: white;
-  text-align: left;
   transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
   transition:
     transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
@@ -394,7 +393,8 @@
 .produto-card h2 {
   margin-top: 0;
   min-height: 58px;
-  display: -webkit-box;
+  display: flex;
+  justify-content: center;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -405,7 +405,9 @@
 .produto-card p {
   min-height: 48px;
   margin: 0;
-  display: -webkit-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
