@@ -60,6 +60,22 @@ function Admin({ sair, onLogout }: Props) {
     }
   }
 
+  // PAGINAÇÃO DOS PRODUTOS
+  const PRODUTOS_POR_PAGINA = 6;
+
+  const [paginaProdutos, setPaginaProdutos] = useState(1);
+
+  const totalPaginasProdutos = Math.max(
+    1,
+    Math.ceil(produtos.length / PRODUTOS_POR_PAGINA),
+  );
+
+  const indiceInicialProdutos = (paginaProdutos - 1) * PRODUTOS_POR_PAGINA;
+
+  const produtosDaPagina = produtos.slice(
+    indiceInicialProdutos,
+    indiceInicialProdutos + PRODUTOS_POR_PAGINA,
+  );
 
   function handleSair() {
     setCarregando(true);
@@ -153,6 +169,16 @@ function Admin({ sair, onLogout }: Props) {
       window.clearInterval(intervalo);
     };
   }, []);
+
+  // Garante que a página atual nunca fique vazia depois de excluir produtos
+  useEffect(() => {
+    setPaginaProdutos((paginaAtual) =>
+      Math.min(
+        paginaAtual,
+        Math.max(1, Math.ceil(produtos.length / PRODUTOS_POR_PAGINA)),
+      ),
+    );
+  }, [produtos.length]);
 
   useEffect(() => {
     async function atualizarUsuarios() {
@@ -260,13 +286,25 @@ function Admin({ sair, onLogout }: Props) {
         return;
       }
 
-      setProdutos((prev) => [...prev, {
-        id: novoProduto.id,
-        nome: novoProduto.nome,
-        descricao: novoProduto.descricao,
-        preco: Number(novoProduto.preco),
-        imagem: novoProduto.imagem || "",
-      }]);
+      setProdutos((prev) => {
+        const novosProdutos = [
+          ...prev,
+          {
+            id: novoProduto.id,
+            nome: novoProduto.nome,
+            descricao: novoProduto.descricao,
+            preco: Number(novoProduto.preco),
+            imagem: novoProduto.imagem || "",
+          },
+        ];
+
+        // Vai automaticamente para a página onde o novo produto foi colocado
+        setPaginaProdutos(
+          Math.ceil(novosProdutos.length / PRODUTOS_POR_PAGINA),
+        );
+
+        return novosProdutos;
+      });
 
       setProdutoAdicionado(true);
       setProdutoAnimando(novoProduto.id);
@@ -351,18 +389,21 @@ function Admin({ sair, onLogout }: Props) {
     }
 
     try {
-      const resposta = await fetch(`http://localhost:3000/api/products/${editandoId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const resposta = await fetch(
+        `http://localhost:3000/api/products/${editandoId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nome: nome.trim(),
+            descricao: descricao.trim(),
+            preco: valorNumerico,
+            imagem,
+          }),
         },
-        body: JSON.stringify({
-          nome: nome.trim(),
-          descricao: descricao.trim(),
-          preco: valorNumerico,
-          imagem,
-        }),
-      });
+      );
 
       const produtoAtualizado = await resposta.json();
 
@@ -432,16 +473,28 @@ function Admin({ sair, onLogout }: Props) {
 
         {imagem && (
           <div className="preview-imagem-container">
-            <img src={imagem} alt="Prévia do produto" className="preview-produto" />
+            <img
+              src={imagem}
+              alt="Prévia do produto"
+              className="preview-produto"
+            />
           </div>
         )}
 
         {editandoId !== null ? (
           <>
-            <button type="button" className="botao-salvar" onClick={salvarEdicao}>
+            <button
+              type="button"
+              className="botao-salvar"
+              onClick={salvarEdicao}
+            >
               Salvar alterações
             </button>
-            <button type="button" className="botao-cancelar" onClick={fecharFormulario}>
+            <button
+              type="button"
+              className="botao-cancelar"
+              onClick={fecharFormulario}
+            >
               Cancelar
             </button>
           </>
@@ -501,62 +554,135 @@ function Admin({ sair, onLogout }: Props) {
           ) : produtos.length === 0 ? (
             <p>Nenhum produto cadastrado.</p>
           ) : (
-            produtos.map((produto) => (
+            <>
               <div
-                className={`produto-admin ${
-                  produtoAnimando === produto.id ? "produto-novo" : ""
-                }`}
-                key={produto.id}
+                className={`produtos-admin-lista quantidade-${produtosDaPagina.length}`}
+                key={paginaProdutos}
               >
-                <div className="produto-info">
-                  {produto.imagem && (
+                {produtosDaPagina.map((produto) => (
+                  <div
+                    className={`produto-admin ${
+                      produtoAnimando === produto.id ? "produto-novo" : ""
+                    }`}
+                    key={produto.id}
+                  >
+                    <div className="produto-info">
+                      {produto.imagem ? (
+                        <button
+                          type="button"
+                          className="produto-imagem-admin-botao"
+                          onClick={() => setProdutoImagemSelecionada(produto)}
+                          aria-label={`Visualizar foto de ${produto.nome}`}
+                        >
+                          <img
+                            src={produto.imagem}
+                            alt={`Foto de ${produto.nome}`}
+                            className="produto-imagem-admin"
+                          />
+                        </button>
+                      ) : (
+                        <div className="produto-imagem-placeholder">
+                          <span>📦</span>
+                        </div>
+                      )}
+
+                      <h3>{produto.nome}</h3>
+
+                      <p>{produto.descricao}</p>
+
+                      <strong>
+                        {produto.preco.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </strong>
+                    </div>
+
+                    <div className="produto-acoes">
+                      <button
+                        type="button"
+                        className="botao-editar"
+                        onClick={() => iniciarEdicao(produto)}
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        type="button"
+                        className="botao-excluir"
+                        onClick={() => excluirProduto(produto.id)}
+                      >
+                        Excluir
+                      </button>
+                    </div>
+
+                    {mostrarFormulario &&
+                      editandoId === produto.id &&
+                      renderFormularioProduto()}
+                  </div>
+                ))}
+              </div>
+
+              {totalPaginasProdutos > 1 && (
+                <div
+                  className="paginacao-produtos"
+                  aria-label="Paginação dos produtos"
+                >
+                  <button
+                    type="button"
+                    className="botao-paginacao"
+                    onClick={() =>
+                      setPaginaProdutos((pagina) => Math.max(1, pagina - 1))
+                    }
+                    disabled={paginaProdutos === 1}
+                    aria-label="Página anterior"
+                  >
+                    ‹
+                  </button>
+
+                  {Array.from(
+                    { length: totalPaginasProdutos },
+                    (_, index) => index + 1,
+                  ).map((pagina) => (
                     <button
                       type="button"
-                      className="produto-imagem-admin-botao"
-                      onClick={() => setProdutoImagemSelecionada(produto)}
-                      aria-label={`Visualizar foto de ${produto.nome}`}
+                      key={pagina}
+                      className={`botao-pagina ${
+                        paginaProdutos === pagina ? "pagina-ativa" : ""
+                      }`}
+                      onClick={() => setPaginaProdutos(pagina)}
                     >
-                      <img
-                        src={produto.imagem}
-                        alt={`Foto de ${produto.nome}`}
-                        className="produto-imagem-admin"
-                      />
+                      {pagina}
                     </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="botao-paginacao"
+                    onClick={() =>
+                      setPaginaProdutos((pagina) =>
+                        Math.min(totalPaginasProdutos, pagina + 1),
+                      )
+                    }
+                    disabled={paginaProdutos === totalPaginasProdutos}
+                    aria-label="Próxima página"
+                  >
+                    ›
+                  </button>
+                </div>
+              )}
+
+              {/* <div className="contador-produtos">
+                Mostrando <strong>{indiceInicialProdutos + 1}</strong> até{" "}
+                <strong>
+                  {Math.min(
+                    indiceInicialProdutos + PRODUTOS_POR_PAGINA,
+                    produtos.length,
                   )}
-
-                  <h3>{produto.nome}</h3>
-
-                  <p>{produto.descricao}</p>
-
-                  <strong>
-                    {produto.preco.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </strong>
-                </div>
-
-                <div className="produto-acoes">
-                  <button
-                    type="button"
-                    className="botao-editar"
-                    onClick={() => iniciarEdicao(produto)}
-                  >
-                    Editar
-                  </button>
-
-                  <button
-                    type="button"
-                    className="botao-excluir"
-                    onClick={() => excluirProduto(produto.id)}
-                  >
-                    Excluir
-                  </button>
-                </div>
-
-                {mostrarFormulario && editandoId === produto.id && renderFormularioProduto()}
-              </div>
-            ))
+                </strong>{" "}
+                de <strong>{produtos.length}</strong> produtos
+              </div> */}
+            </>
           )}
         </div>
         <div className="usuarios-admin">
@@ -620,7 +746,8 @@ function Admin({ sair, onLogout }: Props) {
                         </span>
 
                         <span className="usuario-ultimo-login">
-                          Último login: {formatarUltimoLogin(usuario.lastLoginAt)}
+                          Último login:{" "}
+                          {formatarUltimoLogin(usuario.lastLoginAt)}
                         </span>
                       </div>
                     </div>
@@ -652,7 +779,11 @@ function Admin({ sair, onLogout }: Props) {
 
         {fotoUsuarioSelecionada && (
           <div className="foto-usuario-admin-overlay" role="presentation">
-            <section className="foto-usuario-admin-modal" role="dialog" aria-modal="true">
+            <section
+              className="foto-usuario-admin-modal"
+              role="dialog"
+              aria-modal="true"
+            >
               <button
                 type="button"
                 className="fechar-foto-usuario-admin"
@@ -678,7 +809,11 @@ function Admin({ sair, onLogout }: Props) {
 
         {produtoImagemSelecionada && (
           <div className="foto-usuario-admin-overlay" role="presentation">
-            <section className="foto-usuario-admin-modal" role="dialog" aria-modal="true">
+            <section
+              className="foto-usuario-admin-modal"
+              role="dialog"
+              aria-modal="true"
+            >
               <button
                 type="button"
                 className="fechar-foto-usuario-admin"
