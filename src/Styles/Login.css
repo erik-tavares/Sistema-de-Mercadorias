@@ -487,7 +487,7 @@ input:focus {
 
 @media (max-width: 420px) {
   .login-inputs {
-    padding: 18px 12px;
+    padding: 170px 12px;
   }
 
   .text-login h1 {
