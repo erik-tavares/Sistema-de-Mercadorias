@@ -186,7 +186,10 @@ body {
   gap: 8px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .navegacao-global button {
@@ -836,6 +839,10 @@ button {
   }
 }
 
+/* =========================
+   RESPONSIVIDADE
+========================= */
+
 @media (max-width: 768px) {
   .theme-button {
     top: 14px;
@@ -847,80 +854,301 @@ button {
   .light,
   .dark {
     min-height: 100dvh;
+    overflow-x: hidden;
     overflow-y: auto;
   }
 
+  /* =========================
+     CABEÇALHO TABLET / CELULAR
+  ========================= */
+
   .cabecalho-global {
-    align-items: stretch;
-    flex-wrap: wrap;
-    gap: 6px;
+    width: 100%;
+    min-height: auto;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    align-items: center;
+
+    gap: 8px 12px;
+
     padding: 10px 14px 10px 68px;
   }
 
-  .navegacao-global {
-    order: 3;
-    width: 100%;
-    flex-wrap: wrap;
-    overflow-x: visible;
+  /* =========================
+     MARCA
+  ========================= */
+
+  .marca-global {
+    min-width: 0;
+
+    padding: 7px 0;
+
+    font-size: 21px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* =========================
+     USUÁRIO
+  ========================= */
+
+  .menu-usuario-global {
+    min-width: 0;
+    max-width: 45vw;
   }
 
   .botao-usuario-global {
-    margin-left: auto;
+    max-width: 100%;
+
+    margin-left: 0;
+    padding: 8px 9px;
+
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .botao-usuario-global span {
+    max-width: 120px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .avatar-global {
+    flex-shrink: 0;
+  }
+
+  /* =========================
+     NAVEGAÇÃO
+  ========================= */
+
+  .navegacao-global {
+    grid-column: 1 / -1;
+
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 2px;
+
+    padding: 2px 0 3px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: thin;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .navegacao-global::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .navegacao-global::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .navegacao-global::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 999px;
   }
 
   .navegacao-global button {
-    padding: 8px 9px;
+    flex: 0 0 auto;
+
+    min-height: 38px;
+
+    padding: 8px 10px;
+
     font-size: 12px;
+
+    white-space: nowrap;
   }
 
+  /* =========================
+     CARRINHO
+  ========================= */
+
+  .botao-carrinho-global {
+    flex-shrink: 0;
+  }
+
+  .contador-carrinho-global {
+    top: -7px;
+    right: -7px;
+
+    min-width: 17px;
+    height: 17px;
+
+    font-size: 9px;
+  }
+
+  /* =========================
+     HISTÓRICO
+  ========================= */
+
   .historico-pagina-global {
-    min-height: calc(100vh - 120px);
+    width: 100%;
+    min-height: calc(100dvh - 125px);
+
     padding: 42px 18px;
   }
 
   .historico-cabecalho-global {
     align-items: flex-start;
+    gap: 18px;
   }
 }
+
+/* =========================
+   CELULARES
+========================= */
 
 @media (max-width: 520px) {
   .theme-button {
     top: 12px;
     left: 12px;
+
     width: 40px;
     height: 40px;
   }
 
-  .login-entrando {
-    animation-duration: 0.5s;
-  }
-
   .cabecalho-global {
-    padding-left: 60px;
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    gap: 6px 8px;
+
+    padding: 9px 10px 9px 58px;
   }
 
   .marca-global {
-    font-size: 16px;
-    max-width: 145px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 17px;
   }
 
-  .botao-usuario-global span {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .menu-usuario-global {
+    max-width: 50vw;
+  }
+
+  .botao-usuario-global {
+    gap: 5px;
+
+    padding: 7px 8px;
+
+    font-size: 12px;
+  }
+
+  .botao-usuario-global > svg:first-child {
+    font-size: 18px;
+  }
+
+  .avatar-global {
+    width: 24px;
+    height: 24px;
   }
 
   .navegacao-global {
-    justify-content: center;
+    gap: 5px;
+
+    margin-left: -2px;
+    margin-right: -2px;
+
+    padding-bottom: 4px;
+  }
+
+  .navegacao-global button {
+    min-height: 36px;
+
+    padding: 7px 9px;
+
+    font-size: 11px;
+  }
+
+  .historico-pagina-global {
+    min-height: calc(100dvh - 120px);
+
+    padding: 32px 15px;
   }
 
   .historico-cabecalho-global {
     flex-direction: column;
+    gap: 12px;
   }
 
   .historico-icone-global {
     display: none;
+  }
+}
+
+/* =========================
+   CELULARES PEQUENOS
+========================= */
+
+@media (max-width: 400px) {
+  .theme-button {
+    top: 10px;
+    left: 10px;
+
+    width: 38px;
+    height: 38px;
+  }
+
+  .cabecalho-global {
+    padding-left: 54px;
+    padding-right: 8px;
+  }
+
+  .marca-global {
+    font-size: 15px;
+  }
+
+  .menu-usuario-global {
+    max-width: 48vw;
+  }
+
+  .botao-usuario-global {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .botao-usuario-global span {
+    max-width: 75px;
+  }
+
+  .avatar-global {
+    width: 22px;
+    height: 22px;
+  }
+
+  .botao-usuario-global > svg:first-child {
+    font-size: 17px;
+  }
+
+  .navegacao-global button {
+    min-height: 34px;
+
+    padding: 6px 8px;
+
+    font-size: 10px;
+  }
+
+  .contador-carrinho-global {
+    top: -6px;
+    right: -6px;
+
+    min-width: 16px;
+    height: 16px;
+
+    font-size: 8px;
   }
 }

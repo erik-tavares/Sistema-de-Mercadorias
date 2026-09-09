@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "../Styles/Home.css";
 
 type Produto = {
-  id: number;
+  id: string;
   nome: string;
   descricao: string;
   preco: number;
@@ -10,10 +10,13 @@ type Produto = {
 };
 
 type Usuario = {
+  id: string;
   nome: string;
   email: string;
-  senha: string;
+  senha?: string;
   tipo?: string;
+  theme?: "light" | "dark";
+  fotoPerfil?: string;
 };
 
 type ItemCarrinho = {
@@ -25,6 +28,7 @@ type Props = {
   usuarioLogado: Usuario | null;
   carrinho: ItemCarrinho[];
   onCarrinhoChange: (carrinho: ItemCarrinho[]) => void;
+  onVerDetalhes: (id: string) => void;
 };
 
 function obterSaudacao(): string {
@@ -41,7 +45,12 @@ function obterSaudacao(): string {
   return "Boa noite";
 }
 
-function Home({ usuarioLogado, carrinho, onCarrinhoChange }: Props) {
+function Home({
+  usuarioLogado,
+  carrinho,
+  onCarrinhoChange,
+  onVerDetalhes,
+}: Props) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
 
   const [usuarioAtual, setUsuarioAtual] = useState<Usuario | null>(
@@ -405,6 +414,13 @@ function Home({ usuarioLogado, carrinho, onCarrinhoChange }: Props) {
                     +
                   </button>
                 </div>
+                <button
+                  type="button"
+                  className="botao-detalhes-produto"
+                  onClick={() => onVerDetalhes(produtoSelecionado.id)}
+                >
+                  Ver mais detalhes
+                </button>
               </div>
 
               {/* FECHAR */}
