@@ -834,7 +834,44 @@ function App() {
 
               {pagina === "historico" && (
                 <main className="historico-pagina-global">
-                  {/* seu conteúdo atual do histórico */}
+                  <div className="historico-cabecalho-global">
+                    <div>
+                      <span className="historico-etiqueta-global">COMPRAS</span>
+
+                      <h1>Histórico de compras</h1>
+
+                      <p>Acompanhe aqui todas as suas compras realizadas.</p>
+                    </div>
+
+                    <FaHistory className="historico-icone-global" />
+                  </div>
+
+                  <section className="historico-lista-global">
+                    <div className="historico-vazio-global">
+                      <FaShoppingCart />
+
+                      <h2>Você ainda não fez nenhuma compra</h2>
+
+                      <p>
+                        Quando você realizar uma compra, ela aparecerá aqui.
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPagina("home");
+                          setOpcaoCabecalhoAtiva("inicio");
+                          setPainelGlobal(null);
+
+                          if (window.location.pathname !== "/") {
+                            window.history.pushState({}, "", "/");
+                          }
+                        }}
+                      >
+                        Ir para o início
+                      </button>
+                    </div>
+                  </section>
                 </main>
               )}
 
