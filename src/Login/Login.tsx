@@ -35,6 +35,7 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
         }
 
         const usuarios = await resposta.json();
+
         const usuarioSalvo = usuarios
           .filter(
             (usuario: any) =>
@@ -53,9 +54,7 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
         setEmail(usuarioSalvo.rememberedEmail || "");
         setSenha(usuarioSalvo.rememberedPassword || "");
         setLembrarUsuario(Boolean(usuarioSalvo.rememberedEmail));
-      } catch (error) {
-        console.error("Erro ao carregar último login salvo:", error);
-      }
+      } catch {}
     }
 
     carregarUltimoLogin();
@@ -197,7 +196,9 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
           </div>
 
           <div className="lembrar-usuario">
-            <label className={`check-lembrar ${lembrarUsuario ? "checked" : ""}`}>
+            <label
+              className={`check-lembrar ${lembrarUsuario ? "checked" : ""}`}
+            >
               <input
                 type="checkbox"
                 checked={lembrarUsuario}
