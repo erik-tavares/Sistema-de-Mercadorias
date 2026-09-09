@@ -348,6 +348,7 @@
   width: 250px;
   min-height: 236px;
   padding: 20px;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -464,7 +465,6 @@
   transition:
     background-color 0.5s ease,
     color 0.5s ease;
-  cursor: pointer;
 }
 
 /* =========================
