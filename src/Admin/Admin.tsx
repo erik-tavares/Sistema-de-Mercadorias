@@ -531,6 +531,19 @@ function Admin({ sair, onLogout }: Props) {
       return 1;
     }
 
+    const aOnline = usuariosAtivos.includes(a.id);
+    const bOnline = usuariosAtivos.includes(b.id);
+
+    if (aOnline && !bOnline) {
+      return -1;
+    }
+
+    if (!aOnline && bOnline) {
+      return 1;
+    }
+
+    // 3. Mantém a ordem original se os dois
+    // tiverem o mesmo status
     return 0;
   });
 
