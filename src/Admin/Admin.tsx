@@ -522,6 +522,18 @@ function Admin({ sair, onLogout }: Props) {
     );
   }
 
+  const usuariosOrdenados = [...usuarios].sort((a, b) => {
+    if (a.tipo === "admin" && b.tipo !== "admin") {
+      return -1;
+    }
+
+    if (a.tipo !== "admin" && b.tipo === "admin") {
+      return 1;
+    }
+
+    return 0;
+  });
+
   return (
     <div className="admin">
       {carregando && (
@@ -699,7 +711,7 @@ function Admin({ sair, onLogout }: Props) {
             <p>Nenhum usuário cadastrado.</p>
           ) : (
             <div className="usuarios-lista">
-              {usuarios.map((usuario) => {
+              {usuariosOrdenados.map((usuario) => {
                 const estaLogado = usuariosAtivos.includes(usuario.id);
 
                 return (
