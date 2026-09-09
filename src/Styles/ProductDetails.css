@@ -4,17 +4,16 @@
 
 .pagina-detalhes-produto {
   width: 100%;
-  min-height: 100vh;
+  min-height: 0;
+  padding: 32px 40px;
   background: var(--produto-fundo);
   color: var(--produto-texto);
-  padding: 40px;
   box-sizing: border-box;
 
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
 }
-
 /* ============================= */
 /* CORES DO TEMA */
 /* ============================= */

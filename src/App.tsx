@@ -3,6 +3,7 @@ import Login from "./Login/Login";
 import "./Styles/App.css";
 import { FaMoon } from "react-icons/fa";
 import { FaRegMoon } from "react-icons/fa6";
+
 import {
   FaChevronDown,
   FaHome,
@@ -10,6 +11,7 @@ import {
   FaShieldAlt,
   FaShoppingCart,
 } from "react-icons/fa";
+
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 import CreateUser from "./CreateUser/CreateUser";
 import Home from "./Home/Home";
@@ -53,6 +55,7 @@ function CarrinhoGlobal({
     (total, item) => total + item.quantidade,
     0,
   );
+
   const total = carrinho.reduce(
     (valor, item) => valor + item.produto.preco * item.quantidade,
     0,
@@ -60,6 +63,7 @@ function CarrinhoGlobal({
 
   function fechar() {
     setFechando(true);
+
     window.setTimeout(() => {
       setFechando(false);
       onFechar();
@@ -71,7 +75,10 @@ function CarrinhoGlobal({
       carrinho
         .map((item) =>
           item.produto.id === id
-            ? { ...item, quantidade: item.quantidade + variacao }
+            ? {
+                ...item,
+                quantidade: item.quantidade + variacao,
+              }
             : item,
         )
         .filter((item) => item.quantidade > 0),
@@ -88,10 +95,12 @@ function CarrinhoGlobal({
         <div className="cabecalho-carrinho">
           <div>
             <h2>🛒 Meu carrinho</h2>
+
             <span>
               {quantidade} {quantidade === 1 ? "item" : "itens"}
             </span>
           </div>
+
           <button
             type="button"
             className="botao-fechar-carrinho"
@@ -105,8 +114,11 @@ function CarrinhoGlobal({
         {carrinho.length === 0 ? (
           <div className="carrinho-vazio">
             <span>🛒</span>
+
             <h2>Seu carrinho está vazio</h2>
+
             <p>Adicione alguns produtos para começar suas compras.</p>
+
             <button
               type="button"
               className="botao-continuar-comprando"
@@ -127,14 +139,17 @@ function CarrinhoGlobal({
                       <span>📦</span>
                     )}
                   </div>
+
                   <div className="item-carrinho-info">
                     <h3>{item.produto.nome}</h3>
+
                     <strong>
                       {item.produto.preco.toLocaleString("pt-BR", {
                         style: "currency",
                         currency: "BRL",
                       })}
                     </strong>
+
                     <div className="controle-quantidade">
                       <button
                         type="button"
@@ -142,7 +157,9 @@ function CarrinhoGlobal({
                       >
                         −
                       </button>
+
                       <span>{item.quantidade}</span>
+
                       <button
                         type="button"
                         onClick={() => atualizarQuantidade(item.produto.id, 1)}
@@ -151,6 +168,7 @@ function CarrinhoGlobal({
                       </button>
                     </div>
                   </div>
+
                   <button
                     type="button"
                     className="botao-remover-carrinho"
@@ -162,13 +180,16 @@ function CarrinhoGlobal({
                 </div>
               ))}
             </div>
+
             <div className="resumo-carrinho">
               <div className="linha-resumo">
                 <span>Itens</span>
                 <strong>{quantidade}</strong>
               </div>
+
               <div className="linha-resumo total-carrinho">
                 <span>Total</span>
+
                 <strong>
                   {total.toLocaleString("pt-BR", {
                     style: "currency",
@@ -176,6 +197,7 @@ function CarrinhoGlobal({
                   })}
                 </strong>
               </div>
+
               <button type="button" className="botao-finalizar-compra">
                 Finalizar compra
               </button>
@@ -192,23 +214,32 @@ function App() {
   const [salvandoTema, setSalvandoTema] = useState(false);
   const [saindo, setSaindo] = useState(false);
   const [loginEntrando, setLoginEntrando] = useState(false);
+
   const [usuarioLogado, setUsuarioLogado] = useState<any>(null);
+
   const [produtoDetalheId, setProdutoDetalheId] = useState<string | null>(null);
+
   const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
+
   const [painelGlobal, setPainelGlobal] = useState<
     "conta" | "historico" | null
   >(null);
+
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [nomePerfil, setNomePerfil] = useState("");
   const [fotoPerfil, setFotoPerfil] = useState("");
   const [salvandoPerfil, setSalvandoPerfil] = useState(false);
   const [erroPerfil, setErroPerfil] = useState("");
+
   const [visualizandoFotoPerfil, setVisualizandoFotoPerfil] = useState(false);
+
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
   const [carrinhoAberto, setCarrinhoAberto] = useState(false);
+
   const [opcaoCabecalhoAtiva, setOpcaoCabecalhoAtiva] = useState<
     "inicio" | "admin" | "historico" | "carrinho" | "conta"
   >("inicio");
+
   const [pagina, setPagina] = useState<
     | "login"
     | "user"
@@ -218,8 +249,14 @@ function App() {
     | "CreateUser"
     | "productDetails"
   >("login");
-  const nodeRef = useRef(null);
+
+  const nodeRef = useRef<HTMLDivElement>(null);
+
   const menuUsuarioRef = useRef<HTMLDivElement>(null);
+
+  // =====================================================
+  // FECHAR MENU DO USUÁRIO AO CLICAR FORA
+  // =====================================================
 
   useEffect(() => {
     function fecharMenuAoClicarFora(evento: MouseEvent) {
@@ -234,15 +271,39 @@ function App() {
 
     document.addEventListener("mousedown", fecharMenuAoClicarFora);
 
-    return () =>
+    return () => {
       document.removeEventListener("mousedown", fecharMenuAoClicarFora);
+    };
   }, [menuUsuarioAberto]);
+
+  // =====================================================
+  // VERIFICAR PRODUTO PELA URL
+  // =====================================================
+
+  useEffect(() => {
+    const caminho = window.location.pathname;
+
+    const match = caminho.match(/^\/product\/([^/]+)$/);
+
+    if (match) {
+      setProdutoDetalheId(match[1]);
+      setPagina("productDetails");
+    }
+  }, []);
+
+  // =====================================================
+  // APLICAR TEMA DO USUÁRIO LOGADO
+  // =====================================================
 
   useEffect(() => {
     if (usuarioLogado?.theme) {
       setDark(usuarioLogado.theme === "dark");
     }
   }, [usuarioLogado]);
+
+  // =====================================================
+  // HEARTBEAT DO USUÁRIO
+  // =====================================================
 
   useEffect(() => {
     if (!usuarioLogado?.id) {
@@ -256,7 +317,9 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: usuarioLogado.id }),
+          body: JSON.stringify({
+            id: usuarioLogado.id,
+          }),
         });
       } catch (error) {
         console.error("Erro ao atualizar presença do usuário:", error);
@@ -264,10 +327,17 @@ function App() {
     }
 
     enviarHeartbeat();
+
     const intervalo = window.setInterval(enviarHeartbeat, 15000);
 
-    return () => window.clearInterval(intervalo);
+    return () => {
+      window.clearInterval(intervalo);
+    };
   }, [usuarioLogado?.id]);
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
 
   async function fazerLogout() {
     if (usuarioLogado?.id) {
@@ -277,7 +347,9 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: usuarioLogado.id }),
+          body: JSON.stringify({
+            id: usuarioLogado.id,
+          }),
         });
       } catch (error) {
         console.error("Erro ao registrar saída do usuário:", error);
@@ -288,6 +360,10 @@ function App() {
     setCarrinho([]);
     setCarrinhoAberto(false);
   }
+
+  // =====================================================
+  // PAINEL GLOBAL
+  // =====================================================
 
   function abrirPainelGlobal(painel: "conta" | "historico") {
     setMenuUsuarioAberto(false);
@@ -310,20 +386,41 @@ function App() {
     }
   }
 
+  // =====================================================
+  // ABRIR DETALHES DO PRODUTO
+  // =====================================================
+
   function abrirDetalhesProduto(id: string) {
     setProdutoDetalheId(id);
+
     setCarrinhoAberto(false);
     setPainelGlobal(null);
+
+    window.history.pushState({}, "", `/product/${id}`);
+
     setPagina("productDetails");
   }
 
+  // =====================================================
+  // VOLTAR PARA HOME
+  // =====================================================
+
   function voltarParaInicio() {
     setProdutoDetalheId(null);
+
     setCarrinhoAberto(false);
     setPainelGlobal(null);
+
     setOpcaoCabecalhoAtiva("inicio");
+
     setPagina("home");
+
+    window.history.pushState({}, "", "/");
   }
+
+  // =====================================================
+  // SELECIONAR FOTO DE PERFIL
+  // =====================================================
 
   function selecionarFotoPerfil(evento: React.ChangeEvent<HTMLInputElement>) {
     const arquivo = evento.target.files?.[0];
@@ -343,12 +440,18 @@ function App() {
     }
 
     const leitor = new FileReader();
+
     leitor.onloadend = () => {
       setFotoPerfil(String(leitor.result || ""));
       setErroPerfil("");
     };
+
     leitor.readAsDataURL(arquivo);
   }
+
+  // =====================================================
+  // SALVAR PERFIL
+  // =====================================================
 
   async function salvarPerfil() {
     if (!usuarioLogado?.id || !nomePerfil.trim()) {
@@ -367,7 +470,10 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ nome: nomePerfil, fotoPerfil }),
+          body: JSON.stringify({
+            nome: nomePerfil,
+            fotoPerfil,
+          }),
         },
       );
 
@@ -389,9 +495,14 @@ function App() {
     }
   }
 
+  // =====================================================
+  // SAIR PELO CABEÇALHO
+  // =====================================================
+
   async function sairPeloCabecalho() {
     setMenuUsuarioAberto(false);
     setSaindo(true);
+
     await fazerLogout();
 
     window.setTimeout(() => {
@@ -400,10 +511,18 @@ function App() {
     }, 1500);
   }
 
+  // =====================================================
+  // ABRIR CARRINHO
+  // =====================================================
+
   function abrirCarrinhoGlobal() {
     setOpcaoCabecalhoAtiva("carrinho");
     setCarrinhoAberto(true);
   }
+
+  // =====================================================
+  // CARREGAR TEMA SALVO
+  // =====================================================
 
   useEffect(() => {
     async function carregarTemaSalvo() {
@@ -415,6 +534,7 @@ function App() {
         }
 
         const usuarios = await resposta.json();
+
         const usuarioSalvo = usuarios.find((usuario: any) =>
           Boolean(usuario.rememberedEmail),
         );
@@ -432,16 +552,27 @@ function App() {
     carregarTemaSalvo();
   }, []);
 
+  // =====================================================
+  // ANIMAÇÃO DE ENTRADA DO LOGIN
+  // =====================================================
+
   useEffect(() => {
     if (pagina === "login") {
       setLoginEntrando(true);
+
       const timer = window.setTimeout(() => {
         setLoginEntrando(false);
       }, 600);
 
-      return () => window.clearTimeout(timer);
+      return () => {
+        window.clearTimeout(timer);
+      };
     }
   }, [pagina]);
+
+  // =====================================================
+  // GARANTIR USUÁRIO ADMIN
+  // =====================================================
 
   useEffect(() => {
     async function garantirAdmin() {
@@ -453,6 +584,7 @@ function App() {
         }
 
         const usuarios = await resposta.json();
+
         const adminExiste = usuarios.some(
           (usuario: any) =>
             usuario.email === "admin@email.com" && usuario.tipo === "admin",
@@ -482,6 +614,10 @@ function App() {
     garantirAdmin();
   }, []);
 
+  // =====================================================
+  // TELA DE SAÍDA
+  // =====================================================
+
   if (saindo) {
     return (
       <div className={dark ? "dark" : "light"}>
@@ -495,6 +631,10 @@ function App() {
 
   return (
     <div className={dark ? "dark" : "light"}>
+      {/* =====================================================
+          BOTÃO DE TEMA
+      ===================================================== */}
+
       <button
         className="theme-button"
         disabled={salvandoTema}
@@ -504,7 +644,9 @@ function App() {
           }
 
           const proximoTema = dark ? "light" : "dark";
+
           const proximoValorDark = !dark;
+
           setDark(proximoValorDark);
           setSalvandoTema(true);
 
@@ -518,6 +660,7 @@ function App() {
             }
 
             const usuarios = await respostaUsuarios.json();
+
             const usuarioTema =
               usuarios.find(
                 (usuario: any) => usuario.id === usuarioLogado?.id,
@@ -540,7 +683,9 @@ function App() {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ theme: proximoTema }),
+                body: JSON.stringify({
+                  theme: proximoTema,
+                }),
               },
             );
 
@@ -550,8 +695,14 @@ function App() {
 
             setUsuarioLogado((prev: any) =>
               prev
-                ? { ...prev, theme: proximoTema }
-                : { ...usuarioTema, theme: proximoTema },
+                ? {
+                    ...prev,
+                    theme: proximoTema,
+                  }
+                : {
+                    ...usuarioTema,
+                    theme: proximoTema,
+                  },
             );
           } catch (error) {
             console.error("Erro ao salvar tema no banco:", error);
@@ -563,6 +714,10 @@ function App() {
         {dark ? <FaRegMoon size={20} /> : <FaMoon size={20} />}
       </button>
 
+      {/* =====================================================
+          CABEÇALHO GLOBAL
+      ===================================================== */}
+
       {usuarioLogado && pagina !== "login" && pagina !== "CreateUser" && (
         <header className="cabecalho-global">
           <button
@@ -573,6 +728,10 @@ function App() {
               setPainelGlobal(null);
               setCarrinhoAberto(false);
               setOpcaoCabecalhoAtiva("inicio");
+
+              if (window.location.pathname !== "/") {
+                window.history.pushState({}, "", "/");
+              }
             }}
           >
             Mercado Livre
@@ -589,6 +748,10 @@ function App() {
                 setPainelGlobal(null);
                 setCarrinhoAberto(false);
                 setOpcaoCabecalhoAtiva("inicio");
+
+                if (window.location.pathname !== "/") {
+                  window.history.pushState({}, "", "/");
+                }
               }}
             >
               <FaHome />
@@ -633,6 +796,7 @@ function App() {
             >
               <span className="icone-carrinho-global">
                 <FaShoppingCart />
+
                 {carrinho.reduce((total, item) => total + item.quantidade, 0) >
                   0 && (
                   <span className="contador-carrinho-global">
@@ -669,7 +833,9 @@ function App() {
                     .toUpperCase()}
                 </span>
               )}
+
               <span>{usuarioLogado.nome || usuarioLogado.email}</span>
+
               <FaChevronDown
                 className={menuUsuarioAberto ? "rotacionado" : ""}
               />
@@ -691,6 +857,7 @@ function App() {
                   </span>
                   Minha conta
                 </button>
+
                 <button type="button" onClick={sairPeloCabecalho}>
                   Sair
                 </button>
@@ -699,6 +866,10 @@ function App() {
           </div>
         </header>
       )}
+
+      {/* =====================================================
+          PRODUTO / OUTRAS PÁGINAS
+      ===================================================== */}
 
       {pagina === "productDetails" ? (
         produtoDetalheId !== null && (
@@ -769,12 +940,17 @@ function App() {
         </SwitchTransition>
       )}
 
+      {/* =====================================================
+          CARRINHO GLOBAL
+      ===================================================== */}
+
       <CarrinhoGlobal
         aberto={carrinhoAberto}
         carrinho={carrinho}
         onCarrinhoChange={setCarrinho}
         onFechar={() => {
           setCarrinhoAberto(false);
+
           setOpcaoCabecalhoAtiva(
             pagina === "admin"
               ? "admin"
@@ -785,6 +961,10 @@ function App() {
         }}
       />
 
+      {/* =====================================================
+          PAINEL DA CONTA
+      ===================================================== */}
+
       {painelGlobal && (
         <div className="painel-global-overlay" role="presentation">
           <section className="painel-global" role="dialog" aria-modal="true">
@@ -794,6 +974,7 @@ function App() {
               aria-label="Fechar painel"
               onClick={() => {
                 setPainelGlobal(null);
+
                 setOpcaoCabecalhoAtiva(
                   pagina === "admin"
                     ? "admin"
@@ -806,99 +987,109 @@ function App() {
               ×
             </button>
 
-            <>
-              <div className="perfil-cabecalho-global">
-                {fotoPerfil ? (
-                  <img
-                    src={fotoPerfil}
-                    alt="Prévia do perfil"
-                    className="avatar-perfil-global"
-                  />
-                ) : (
-                  <span className="avatar-perfil-global avatar-inicial-perfil-global">
-                    {(usuarioLogado?.nome || usuarioLogado?.email || "U")
-                      .charAt(0)
-                      .toUpperCase()}
-                  </span>
-                )}
-                <div>
-                  <h2>Minha conta</h2>
-                  <span>{usuarioLogado?.email}</span>
-                </div>
-              </div>
-
-              {editandoPerfil ? (
-                <div className="formulario-perfil-global">
-                  <label htmlFor="nome-perfil">Nome</label>
-                  <input
-                    id="nome-perfil"
-                    value={nomePerfil}
-                    onChange={(evento) => setNomePerfil(evento.target.value)}
-                    placeholder="Seu nome"
-                  />
-
-                  <label htmlFor="foto-perfil">Foto de usuário</label>
-                  <input
-                    id="foto-perfil"
-                    type="file"
-                    accept="image/*"
-                    onChange={selecionarFotoPerfil}
-                  />
-
-                  {erroPerfil && (
-                    <p className="erro-perfil-global">{erroPerfil}</p>
-                  )}
-
-                  <div className="acoes-perfil-global">
-                    <button
-                      type="button"
-                      onClick={salvarPerfil}
-                      disabled={salvandoPerfil}
-                    >
-                      {salvandoPerfil ? "Salvando..." : "Salvar perfil"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setEditandoPerfil(false)}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </div>
+            <div className="perfil-cabecalho-global">
+              {fotoPerfil ? (
+                <img
+                  src={fotoPerfil}
+                  alt="Prévia do perfil"
+                  className="avatar-perfil-global"
+                />
               ) : (
-                <>
-                  <p>{usuarioLogado?.nome}</p>
-                  <small>
-                    Tipo de acesso:{" "}
-                    {usuarioLogado?.tipo === "admin"
-                      ? "Administrador"
-                      : "Usuário"}
-                  </small>
-                  {fotoPerfil && (
-                    <button
-                      type="button"
-                      className="botao-visualizar-foto-global"
-                      onClick={() => setVisualizandoFotoPerfil(true)}
-                    >
-                      Visualizar foto
-                    </button>
-                  )}
+                <span className="avatar-perfil-global avatar-inicial-perfil-global">
+                  {(usuarioLogado?.nome || usuarioLogado?.email || "U")
+                    .charAt(0)
+                    .toUpperCase()}
+                </span>
+              )}
+
+              <div>
+                <h2>Minha conta</h2>
+                <span>{usuarioLogado?.email}</span>
+              </div>
+            </div>
+
+            {editandoPerfil ? (
+              <div className="formulario-perfil-global">
+                <label htmlFor="nome-perfil">Nome</label>
+
+                <input
+                  id="nome-perfil"
+                  value={nomePerfil}
+                  onChange={(evento) => setNomePerfil(evento.target.value)}
+                  placeholder="Seu nome"
+                />
+
+                <label htmlFor="foto-perfil">Foto de usuário</label>
+
+                <input
+                  id="foto-perfil"
+                  type="file"
+                  accept="image/*"
+                  onChange={selecionarFotoPerfil}
+                />
+
+                {erroPerfil && (
+                  <p className="erro-perfil-global">{erroPerfil}</p>
+                )}
+
+                <div className="acoes-perfil-global">
                   <button
                     type="button"
-                    className="botao-editar-perfil-global"
-                    onClick={() => {
-                      setEditandoPerfil(true);
-                      setOpcaoCabecalhoAtiva("conta");
-                    }}
+                    onClick={salvarPerfil}
+                    disabled={salvandoPerfil}
                   >
-                    Editar perfil
+                    {salvandoPerfil ? "Salvando..." : "Salvar perfil"}
                   </button>
-                </>
-              )}
-            </>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditandoPerfil(false)}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p>{usuarioLogado?.nome}</p>
+
+                <small>
+                  Tipo de acesso:{" "}
+                  {usuarioLogado?.tipo === "admin"
+                    ? "Administrador"
+                    : "Usuário"}
+                </small>
+
+                {fotoPerfil && (
+                  <button
+                    type="button"
+                    className="botao-visualizar-foto-global"
+                    onClick={() => setVisualizandoFotoPerfil(true)}
+                  >
+                    Visualizar foto
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  className="botao-editar-perfil-global"
+                  onClick={() => {
+                    setEditandoPerfil(true);
+
+                    setOpcaoCabecalhoAtiva("conta");
+                  }}
+                >
+                  Editar perfil
+                </button>
+              </>
+            )}
           </section>
         </div>
       )}
+
+      {/* =====================================================
+          VISUALIZADOR DA FOTO
+      ===================================================== */}
 
       {visualizandoFotoPerfil && fotoPerfil && (
         <div className="foto-perfil-overlay" role="presentation">
@@ -915,6 +1106,7 @@ function App() {
             >
               ×
             </button>
+
             <img
               src={fotoPerfil}
               alt={`Foto de perfil de ${usuarioLogado?.nome || "usuário"}`}

@@ -10,7 +10,7 @@ type Produto = {
 };
 
 type Props = {
-  produtoId: number;
+  produtoId: string;
   onVoltar: () => void;
 };
 
