@@ -20,7 +20,7 @@ import Admin from "./Admin/Admin";
 import ProductDetails from "./ProductDetails/ProductDetails";
 
 type ProdutoCarrinho = {
-  id: number;
+  id: string;
   nome: string;
   descricao: string;
   preco: number;
@@ -70,7 +70,7 @@ function CarrinhoGlobal({
     }, 300);
   }
 
-  function atualizarQuantidade(id: number, variacao: number) {
+  function atualizarQuantidade(id: string, variacao: number) {
     onCarrinhoChange(
       carrinho
         .map((item) =>
@@ -85,7 +85,7 @@ function CarrinhoGlobal({
     );
   }
 
-  function remover(id: number) {
+  function remover(id: string) {
     onCarrinhoChange(carrinho.filter((item) => item.produto.id !== id));
   }
 
