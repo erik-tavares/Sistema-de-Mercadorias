@@ -144,7 +144,7 @@ function Admin({ sair, onLogout }: Props) {
           email: usuario.email,
           fotoPerfil: usuario.fotoPerfil || "",
           lastLoginAt: usuario.lastLoginAt || null,
-          tipo: usuario.tipo || "cliente",
+          tipo: usuario.tipo || "usuario",
         }));
 
         setProdutos(produtosFormatados);
@@ -197,7 +197,7 @@ function Admin({ sair, onLogout }: Props) {
             email: usuario.email,
             fotoPerfil: usuario.fotoPerfil || "",
             lastLoginAt: usuario.lastLoginAt || null,
-            tipo: usuario.tipo || "cliente",
+            tipo: usuario.tipo || "usuario",
           })),
         );
       } catch (error) {
@@ -212,12 +212,10 @@ function Admin({ sair, onLogout }: Props) {
 
   function abrirFormulario() {
     setEditandoId(null);
-
     setNome("");
     setDescricao("");
     setPreco("");
     setImagem("");
-
     setMostrarFormulario(true);
   }
 
@@ -227,7 +225,6 @@ function Admin({ sair, onLogout }: Props) {
     setTimeout(() => {
       setMostrarFormulario(false);
       setFechandoFormulario(false);
-
       setNome("");
       setDescricao("");
       setPreco("");
@@ -355,7 +352,6 @@ function Admin({ sair, onLogout }: Props) {
 
   function iniciarEdicao(produto: Produto) {
     setEditandoId(produto.id);
-
     setNome(produto.nome);
     setDescricao(produto.descricao);
 
@@ -367,7 +363,6 @@ function Admin({ sair, onLogout }: Props) {
     );
 
     setImagem(produto.imagem || "");
-
     setMostrarFormulario(true);
   }
 
@@ -430,9 +425,7 @@ function Admin({ sair, onLogout }: Props) {
       setDescricao("");
       setPreco("");
       setImagem("");
-
       setEditandoId(null);
-
       fecharFormulario();
     } catch (error) {
       alert("Não foi possível conectar ao servidor.");
@@ -502,7 +495,9 @@ function Admin({ sair, onLogout }: Props) {
           <>
             <button
               type="button"
-              className={`botao-salvar ${produtoAdicionado ? "produto-adicionado" : ""}`}
+              className={`botao-salvar ${
+                produtoAdicionado ? "produto-adicionado" : ""
+              }`}
               onClick={adicionarProduto}
               disabled={produtoAdicionado}
             >
@@ -542,8 +537,6 @@ function Admin({ sair, onLogout }: Props) {
       return 1;
     }
 
-    // 3. Mantém a ordem original se os dois
-    // tiverem o mesmo status
     return 0;
   });
 
@@ -666,7 +659,9 @@ function Admin({ sair, onLogout }: Props) {
                   </button>
 
                   {Array.from(
-                    { length: totalPaginasProdutos },
+                    {
+                      length: totalPaginasProdutos,
+                    },
                     (_, index) => index + 1,
                   ).map((pagina) => (
                     <button
@@ -697,7 +692,8 @@ function Admin({ sair, onLogout }: Props) {
                 </div>
               )}
 
-              {/* <div className="contador-produtos">
+              {/*
+              <div className="contador-produtos">
                 Mostrando <strong>{indiceInicialProdutos + 1}</strong> até{" "}
                 <strong>
                   {Math.min(
@@ -706,7 +702,8 @@ function Admin({ sair, onLogout }: Props) {
                   )}
                 </strong>{" "}
                 de <strong>{produtos.length}</strong> produtos
-              </div> */}
+              </div>
+              */}
             </>
           )}
         </div>
@@ -793,14 +790,17 @@ function Admin({ sair, onLogout }: Props) {
             </div>
           )}
         </div>
-        {/* <button
+
+        {/*
+        <button
           type="button"
           className="botao-sair-admin"
           onClick={handleSair}
           disabled={carregando}
         >
           {carregando ? "Saindo..." : "Sair"}
-        </button> */}
+        </button>
+        */}
 
         {fotoUsuarioSelecionada && (
           <div className="foto-usuario-admin-overlay" role="presentation">
