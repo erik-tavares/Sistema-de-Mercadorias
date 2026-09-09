@@ -768,14 +768,14 @@ function Admin({ sair, onLogout }: Props) {
             </div>
           )}
         </div>
-        <button
+        {/* <button
           type="button"
           className="botao-sair-admin"
           onClick={handleSair}
           disabled={carregando}
         >
           {carregando ? "Saindo..." : "Sair"}
-        </button>
+        </button> */}
 
         {fotoUsuarioSelecionada && (
           <div className="foto-usuario-admin-overlay" role="presentation">

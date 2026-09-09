@@ -364,6 +364,10 @@ input:focus {
   animation: entradaLoading 0.15s ease forwards;
 }
 
+.light h4 {
+  color: white;
+}
+
 .loading-screen-login p {
   margin-top: 20px;
   color: white;

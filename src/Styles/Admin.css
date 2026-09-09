@@ -242,6 +242,7 @@
 
 .produtos-admin-lista.quantidade-1 .produto-admin {
   grid-column: 2;
+  cursor: pointer;
 }
 
 /* 2 produtos na página */
