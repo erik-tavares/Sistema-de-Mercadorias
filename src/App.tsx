@@ -142,14 +142,12 @@ function CarrinhoGlobal({
 
                   <div className="item-carrinho-info">
                     <h3>{item.produto.nome}</h3>
-
                     <strong>
                       {item.produto.preco.toLocaleString("pt-BR", {
                         style: "currency",
                         currency: "BRL",
                       })}
                     </strong>
-
                     <div className="controle-quantidade">
                       <button
                         type="button"
@@ -157,9 +155,7 @@ function CarrinhoGlobal({
                       >
                         −
                       </button>
-
                       <span>{item.quantidade}</span>
-
                       <button
                         type="button"
                         onClick={() => atualizarQuantidade(item.produto.id, 1)}
@@ -168,7 +164,6 @@ function CarrinhoGlobal({
                       </button>
                     </div>
                   </div>
-
                   <button
                     type="button"
                     className="botao-remover-carrinho"
@@ -180,7 +175,6 @@ function CarrinhoGlobal({
                 </div>
               ))}
             </div>
-
             <div className="resumo-carrinho">
               <div className="linha-resumo">
                 <span>Itens</span>
@@ -214,32 +208,23 @@ function App() {
   const [salvandoTema, setSalvandoTema] = useState(false);
   const [saindo, setSaindo] = useState(false);
   const [loginEntrando, setLoginEntrando] = useState(false);
-
   const [usuarioLogado, setUsuarioLogado] = useState<any>(null);
-
   const [produtoDetalheId, setProdutoDetalheId] = useState<string | null>(null);
-
   const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
-
   const [painelGlobal, setPainelGlobal] = useState<
     "conta" | "historico" | null
   >(null);
-
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [nomePerfil, setNomePerfil] = useState("");
   const [fotoPerfil, setFotoPerfil] = useState("");
   const [salvandoPerfil, setSalvandoPerfil] = useState(false);
   const [erroPerfil, setErroPerfil] = useState("");
-
   const [visualizandoFotoPerfil, setVisualizandoFotoPerfil] = useState(false);
-
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
   const [carrinhoAberto, setCarrinhoAberto] = useState(false);
-
   const [opcaoCabecalhoAtiva, setOpcaoCabecalhoAtiva] = useState<
     "inicio" | "admin" | "historico" | "carrinho" | "conta"
   >("inicio");
-
   const [pagina, setPagina] = useState<
     | "login"
     | "user"
@@ -249,14 +234,8 @@ function App() {
     | "CreateUser"
     | "productDetails"
   >("login");
-
   const nodeRef = useRef<HTMLDivElement>(null);
-
   const menuUsuarioRef = useRef<HTMLDivElement>(null);
-
-  // =====================================================
-  // FECHAR MENU DO USUÁRIO AO CLICAR FORA
-  // =====================================================
 
   useEffect(() => {
     function fecharMenuAoClicarFora(evento: MouseEvent) {
@@ -268,42 +247,26 @@ function App() {
         setMenuUsuarioAberto(false);
       }
     }
-
     document.addEventListener("mousedown", fecharMenuAoClicarFora);
-
     return () => {
       document.removeEventListener("mousedown", fecharMenuAoClicarFora);
     };
   }, [menuUsuarioAberto]);
 
-  // =====================================================
-  // VERIFICAR PRODUTO PELA URL
-  // =====================================================
-
   useEffect(() => {
     const caminho = window.location.pathname;
-
     const match = caminho.match(/^\/product\/([^/]+)$/);
-
     if (match) {
       setProdutoDetalheId(match[1]);
       setPagina("productDetails");
     }
   }, []);
 
-  // =====================================================
-  // APLICAR TEMA DO USUÁRIO LOGADO
-  // =====================================================
-
   useEffect(() => {
     if (usuarioLogado?.theme) {
       setDark(usuarioLogado.theme === "dark");
     }
   }, [usuarioLogado]);
-
-  // =====================================================
-  // HEARTBEAT DO USUÁRIO
-  // =====================================================
 
   useEffect(() => {
     if (!usuarioLogado?.id) {
@@ -386,10 +349,6 @@ function App() {
     }
   }
 
-  // =====================================================
-  // ABRIR DETALHES DO PRODUTO
-  // =====================================================
-
   function abrirDetalhesProduto(id: string) {
     setProdutoDetalheId(id);
 
@@ -401,30 +360,17 @@ function App() {
     setPagina("productDetails");
   }
 
-  // =====================================================
-  // VOLTAR PARA HOME
-  // =====================================================
-
   function voltarParaInicio() {
     setProdutoDetalheId(null);
-
     setCarrinhoAberto(false);
     setPainelGlobal(null);
-
     setOpcaoCabecalhoAtiva("inicio");
-
     setPagina("home");
-
     window.history.pushState({}, "", "/");
   }
 
-  // =====================================================
-  // SELECIONAR FOTO DE PERFIL
-  // =====================================================
-
   function selecionarFotoPerfil(evento: React.ChangeEvent<HTMLInputElement>) {
     const arquivo = evento.target.files?.[0];
-
     if (!arquivo) {
       return;
     }
@@ -448,10 +394,6 @@ function App() {
 
     leitor.readAsDataURL(arquivo);
   }
-
-  // =====================================================
-  // SALVAR PERFIL
-  // =====================================================
 
   async function salvarPerfil() {
     if (!usuarioLogado?.id || !nomePerfil.trim()) {
@@ -495,10 +437,6 @@ function App() {
     }
   }
 
-  // =====================================================
-  // SAIR PELO CABEÇALHO
-  // =====================================================
-
   async function sairPeloCabecalho() {
     setMenuUsuarioAberto(false);
     setSaindo(true);
@@ -511,18 +449,10 @@ function App() {
     }, 1500);
   }
 
-  // =====================================================
-  // ABRIR CARRINHO
-  // =====================================================
-
   function abrirCarrinhoGlobal() {
     setOpcaoCabecalhoAtiva("carrinho");
     setCarrinhoAberto(true);
   }
-
-  // =====================================================
-  // CARREGAR TEMA SALVO
-  // =====================================================
 
   useEffect(() => {
     async function carregarTemaSalvo() {
@@ -532,9 +462,7 @@ function App() {
         if (!resposta.ok) {
           return;
         }
-
         const usuarios = await resposta.json();
-
         const usuarioSalvo = usuarios.find((usuario: any) =>
           Boolean(usuario.rememberedEmail),
         );
@@ -552,10 +480,6 @@ function App() {
     carregarTemaSalvo();
   }, []);
 
-  // =====================================================
-  // ANIMAÇÃO DE ENTRADA DO LOGIN
-  // =====================================================
-
   useEffect(() => {
     if (pagina === "login") {
       setLoginEntrando(true);
@@ -569,10 +493,6 @@ function App() {
       };
     }
   }, [pagina]);
-
-  // =====================================================
-  // GARANTIR USUÁRIO ADMIN
-  // =====================================================
 
   useEffect(() => {
     async function garantirAdmin() {
@@ -614,10 +534,6 @@ function App() {
     garantirAdmin();
   }, []);
 
-  // =====================================================
-  // TELA DE SAÍDA
-  // =====================================================
-
   if (saindo) {
     return (
       <div className={dark ? "dark" : "light"}>
@@ -631,10 +547,6 @@ function App() {
 
   return (
     <div className={dark ? "dark" : "light"}>
-      {/* =====================================================
-          BOTÃO DE TEMA
-      ===================================================== */}
-
       <button
         className="theme-button"
         disabled={salvandoTema}
@@ -713,10 +625,6 @@ function App() {
       >
         {dark ? <FaRegMoon size={20} /> : <FaMoon size={20} />}
       </button>
-
-      {/* =====================================================
-          CABEÇALHO GLOBAL
-      ===================================================== */}
 
       {usuarioLogado && pagina !== "login" && pagina !== "CreateUser" && (
         <header className="cabecalho-global">
@@ -866,10 +774,6 @@ function App() {
           </div>
         </header>
       )}
-
-      {/* =====================================================
-          PRODUTO / OUTRAS PÁGINAS
-      ===================================================== */}
 
       {pagina === "productDetails" ? (
         produtoDetalheId !== null && (
