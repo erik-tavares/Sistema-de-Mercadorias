@@ -100,7 +100,7 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
           email: "",
           senha: usuario.error || "E-mail ou senha incorretos",
         });
-
+        
         return;
       }
 

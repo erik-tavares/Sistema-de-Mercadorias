@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import "../Styles/Admin.css";
 
 type Props = {
@@ -27,23 +28,33 @@ type Usuario = {
 
 function Admin({ sair, onLogout }: Props) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
   const [imagem, setImagem] = useState("");
+
   const [produtoAnimando, setProdutoAnimando] = useState<number | null>(null);
   const [fechandoFormulario, setFechandoFormulario] = useState(false);
+
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [editandoId, setEditandoId] = useState<number | null>(null);
+
   const [produtoAdicionado, setProdutoAdicionado] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(true);
+
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [usuariosAtivos, setUsuariosAtivos] = useState<number[]>([]);
+
   const [fotoUsuarioSelecionada, setFotoUsuarioSelecionada] =
     useState<Usuario | null>(null);
+
   const [produtoImagemSelecionada, setProdutoImagemSelecionada] =
     useState<Produto | null>(null);
+
+  // Controle do modal de descrição expandida
+  const [descricaoExpandida, setDescricaoExpandida] = useState(false);
 
   async function carregarUsuariosAtivos() {
     try {
@@ -54,6 +65,7 @@ function Admin({ sair, onLogout }: Props) {
       }
 
       const dados = await resposta.json();
+
       setUsuariosAtivos(dados.ids || []);
     } catch (error) {
       console.error("Erro ao carregar usuários ativos:", error);
@@ -113,6 +125,7 @@ function Admin({ sair, onLogout }: Props) {
     }
 
     const dias = Math.floor(horas / 24);
+
     return `Há ${dias} dia${dias === 1 ? "" : "s"}`;
   }
 
@@ -129,6 +142,7 @@ function Admin({ sair, onLogout }: Props) {
         const produtosSalvos = produtosResponse.ok
           ? await produtosResponse.json()
           : [];
+
         const usuariosSalvos = usuariosResponse.ok
           ? await usuariosResponse.json()
           : [];
@@ -161,7 +175,9 @@ function Admin({ sair, onLogout }: Props) {
 
   useEffect(() => {
     carregarUsuariosAtivos();
+
     const primeiraAtualizacao = window.setTimeout(carregarUsuariosAtivos, 1000);
+
     const intervalo = window.setInterval(carregarUsuariosAtivos, 3000);
 
     return () => {
@@ -190,6 +206,7 @@ function Admin({ sair, onLogout }: Props) {
         }
 
         const usuariosAtualizados = await resposta.json();
+
         setUsuarios(
           usuariosAtualizados.map((usuario: any) => ({
             id: usuario.id,
@@ -216,15 +233,18 @@ function Admin({ sair, onLogout }: Props) {
     setDescricao("");
     setPreco("");
     setImagem("");
+    setDescricaoExpandida(false);
     setMostrarFormulario(true);
   }
 
   function fecharFormulario() {
+    setDescricaoExpandida(false);
     setFechandoFormulario(true);
 
     setTimeout(() => {
       setMostrarFormulario(false);
       setFechandoFormulario(false);
+
       setNome("");
       setDescricao("");
       setPreco("");
@@ -295,7 +315,6 @@ function Admin({ sair, onLogout }: Props) {
           },
         ];
 
-        // Vai automaticamente para a página onde o novo produto foi colocado
         setPaginaProdutos(
           Math.ceil(novosProdutos.length / PRODUTOS_POR_PAGINA),
         );
@@ -363,6 +382,7 @@ function Admin({ sair, onLogout }: Props) {
     );
 
     setImagem(produto.imagem || "");
+    setDescricaoExpandida(false);
     setMostrarFormulario(true);
   }
 
@@ -426,6 +446,8 @@ function Admin({ sair, onLogout }: Props) {
       setPreco("");
       setImagem("");
       setEditandoId(null);
+      setDescricaoExpandida(false);
+
       fecharFormulario();
     } catch (error) {
       alert("Não foi possível conectar ao servidor.");
@@ -441,20 +463,64 @@ function Admin({ sair, onLogout }: Props) {
       >
         <h2>{editandoId !== null ? "Editar produto" : "Novo produto"}</h2>
 
-        <input
-          type="text"
-          placeholder="Nome do produto"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
+        {/* NOME */}
+        <div className="campo-produto-wrapper">
+          <input
+            type="text"
+            className="campo-nome-produto"
+            placeholder="Nome do produto"
+            value={nome}
+            maxLength={120}
+            onChange={(e) => setNome(e.target.value)}
+          />
 
-        <input
-          type="text"
-          placeholder="Descrição"
+          <span
+            className={`contador-campo-produto ${
+              nome.length >= 120
+                ? "limite"
+                : nome.length >= 100
+                  ? "proximo-limite"
+                  : ""
+            }`}
+          >
+            {nome.length}/120
+          </span>
+        </div>
+
+        {/* DESCRIÇÃO */}
+        <div className="campo-descricao-cabecalho">
+          <span className="campo-descricao-titulo">Descrição do produto</span>
+
+          <button
+            type="button"
+            className="botao-expandir-descricao"
+            onClick={() => setDescricaoExpandida(true)}
+          >
+            ↗ Expandir
+          </button>
+        </div>
+
+        <textarea
+          className="textarea-descricao-produto"
+          placeholder="Descrição do produto"
           value={descricao}
+          maxLength={1000}
           onChange={(e) => setDescricao(e.target.value)}
         />
 
+        <span
+          className={`contador-campo-produto ${
+            descricao.length >= 1000
+              ? "limite"
+              : descricao.length >= 850
+                ? "proximo-limite"
+                : ""
+          }`}
+        >
+          {descricao.length}/1000
+        </span>
+
+        {/* PREÇO */}
         <input
           type="text"
           placeholder="Preço"
@@ -462,6 +528,7 @@ function Admin({ sair, onLogout }: Props) {
           onChange={(e) => setPreco(e.target.value)}
         />
 
+        {/* IMAGEM */}
         <input type="file" accept="image/*" onChange={adicionarImagem} />
 
         {imagem && (
@@ -474,6 +541,7 @@ function Admin({ sair, onLogout }: Props) {
           </div>
         )}
 
+        {/* BOTÕES */}
         {editandoId !== null ? (
           <>
             <button
@@ -483,6 +551,7 @@ function Admin({ sair, onLogout }: Props) {
             >
               Salvar alterações
             </button>
+
             <button
               type="button"
               className="botao-cancelar"
@@ -503,6 +572,7 @@ function Admin({ sair, onLogout }: Props) {
             >
               {produtoAdicionado ? "✓ Produto adicionado!" : "Adicionar à Loja"}
             </button>
+
             <button
               type="button"
               className="botao-cancelar"
@@ -691,25 +761,14 @@ function Admin({ sair, onLogout }: Props) {
                   </button>
                 </div>
               )}
-
-              {/*
-              <div className="contador-produtos">
-                Mostrando <strong>{indiceInicialProdutos + 1}</strong> até{" "}
-                <strong>
-                  {Math.min(
-                    indiceInicialProdutos + PRODUTOS_POR_PAGINA,
-                    produtos.length,
-                  )}
-                </strong>{" "}
-                de <strong>{produtos.length}</strong> produtos
-              </div>
-              */}
             </>
           )}
         </div>
+
         <div className="usuarios-admin">
           <div className="usuarios-titulo">
             <h2>Usuários cadastrados</h2>
+
             <span className="usuarios-online-total">
               {usuariosAtivos.length} usuário(s) online
             </span>
@@ -791,17 +850,63 @@ function Admin({ sair, onLogout }: Props) {
           )}
         </div>
 
-        {/*
-        <button
-          type="button"
-          className="botao-sair-admin"
-          onClick={handleSair}
-          disabled={carregando}
-        >
-          {carregando ? "Saindo..." : "Sair"}
-        </button>
-        */}
+        {/* MODAL DA DESCRIÇÃO EXPANDIDA */}
+        {descricaoExpandida && (
+          <div className="descricao-produto-overlay" role="presentation">
+            <section
+              className="descricao-produto-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="titulo-descricao-produto"
+            >
+              <button
+                type="button"
+                className="fechar-descricao-produto"
+                onClick={() => setDescricaoExpandida(false)}
+                aria-label="Fechar descrição"
+              >
+                ×
+              </button>
 
+              <h3 id="titulo-descricao-produto">
+                {editandoId !== null
+                  ? "Editar descrição"
+                  : "Descrição do produto"}
+              </h3>
+
+              <p>Digite ou revise a descrição completa do produto.</p>
+
+              <textarea
+                value={descricao}
+                maxLength={1000}
+                onChange={(e) => setDescricao(e.target.value)}
+                autoFocus
+              />
+
+              <span
+                className={`contador-campo-produto ${
+                  descricao.length >= 1000
+                    ? "limite"
+                    : descricao.length >= 850
+                      ? "proximo-limite"
+                      : ""
+                }`}
+              >
+                {descricao.length}/1000
+              </span>
+
+              <button
+                type="button"
+                className="botao-salvar-descricao-admin"
+                onClick={() => setDescricaoExpandida(false)}
+              >
+                Concluir
+              </button>
+            </section>
+          </div>
+        )}
+
+        {/* MODAL FOTO DO USUÁRIO */}
         {fotoUsuarioSelecionada && (
           <div className="foto-usuario-admin-overlay" role="presentation">
             <section
@@ -817,6 +922,7 @@ function Admin({ sair, onLogout }: Props) {
               >
                 ×
               </button>
+
               {fotoUsuarioSelecionada.fotoPerfil ? (
                 <img
                   src={fotoUsuarioSelecionada.fotoPerfil}
@@ -827,11 +933,13 @@ function Admin({ sair, onLogout }: Props) {
                   {fotoUsuarioSelecionada.nome.charAt(0).toUpperCase()}
                 </div>
               )}
+
               <strong>{fotoUsuarioSelecionada.nome}</strong>
             </section>
           </div>
         )}
 
+        {/* MODAL FOTO DO PRODUTO */}
         {produtoImagemSelecionada && (
           <div className="foto-usuario-admin-overlay" role="presentation">
             <section
@@ -847,10 +955,12 @@ function Admin({ sair, onLogout }: Props) {
               >
                 ×
               </button>
+
               <img
                 src={produtoImagemSelecionada.imagem}
                 alt={`Foto de ${produtoImagemSelecionada.nome}`}
               />
+
               <strong>{produtoImagemSelecionada.nome}</strong>
             </section>
           </div>

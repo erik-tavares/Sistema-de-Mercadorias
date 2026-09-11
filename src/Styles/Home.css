@@ -392,28 +392,35 @@
 }
 
 .produto-card h2 {
-  margin-top: 0;
+  width: 100%;
   min-height: 58px;
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
+  margin-top: 0;
+  display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
+  overflow: hidden;
   color: white;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .produto-card p {
+  width: 100%;
   min-height: 48px;
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+  display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 8;
+  line-clamp: 4;
+  overflow: hidden;
   color: white;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .produto-card strong {
@@ -1555,6 +1562,61 @@
 
 .botao-detalhes-produto:active {
   transform: scale(0.98);
+}
+
+/* ==================================================
+   DESCRIÇÃO RESUMIDA DO MODAL
+================================================== */
+
+.modal-descricao {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 15px 0;
+  text-align: center;
+  overflow: hidden;
+}
+
+.modal-descricao p {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+
+  color: #ccc;
+  font-size: 16px;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* =========================
+   VER MAIS
+========================= */
+
+.botao-ver-mais-descricao {
+  display: inline;
+  margin-left: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #4a90e2;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.botao-ver-mais-descricao:hover {
+  color: #6aa8f0;
+  text-decoration: underline;
+}
+
+.botao-ver-mais-descricao:active {
+  transform: scale(0.96);
 }
 
 /* =========================

@@ -217,6 +217,11 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
   animation: aparecerProdutosPagina 0.35s ease;
+  align-items: start;
+}
+
+.produto-admin {
+  align-self: start;
 }
 
 @keyframes aparecerProdutosPagina {
@@ -1227,6 +1232,612 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* ========================================
+   CAMPOS LONGOS DO PRODUTO
+======================================== */
+
+.campo-produto-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Campo do nome */
+
+.campo-nome-produto {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 75px !important;
+}
+
+/* Contador de caracteres */
+
+.contador-campo-produto {
+  display: block;
+  margin-top: 5px;
+  text-align: right;
+  color: #777;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.contador-campo-produto.proximo-limite {
+  color: #eab308;
+}
+
+.contador-campo-produto.limite {
+  color: #ef4444;
+}
+
+/* ========================================
+   TEXTAREA DA DESCRIÇÃO
+======================================== */
+
+.form-produto textarea {
+  width: 100%;
+  min-height: 130px;
+  max-height: 300px;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 2px solid #333;
+  border-radius: 6px;
+  background-color: #2a2a2a;
+  color: white;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: vertical;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-produto textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.08);
+}
+
+.form-produto textarea::placeholder {
+  color: #777;
+}
+
+/* ========================================
+   CABEÇALHO DA DESCRIÇÃO
+======================================== */
+
+.campo-descricao-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: -8px;
+}
+
+.campo-descricao-titulo {
+  color: #ddd;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* ========================================
+   BOTÃO EXPANDIR DESCRIÇÃO
+======================================== */
+
+.botao-expandir-descricao {
+  align-self: flex-end;
+  padding: 7px 11px;
+  border: 1px solid #3d3d3d;
+  border-radius: 6px;
+  background-color: #303030;
+  color: #aaa;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.botao-expandir-descricao:hover {
+  background-color: #383838;
+  color: white;
+  border-color: #4a90e2;
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   MODAL DA DESCRIÇÃO COMPLETA
+======================================== */
+
+.descricao-produto-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 13000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.78);
+  box-sizing: border-box;
+}
+
+.descricao-produto-modal {
+  position: relative;
+  width: min(850px, 95vw);
+  max-height: 90vh;
+  padding: 28px;
+  border: 1px solid #383838;
+  border-radius: 14px;
+  background-color: #202020;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  animation: abrirDescricaoProduto 0.25s ease both;
+}
+
+.descricao-produto-modal h3 {
+  margin: 0 40px 8px 0;
+  color: white;
+  font-size: 21px;
+  text-align: left;
+}
+
+.descricao-produto-modal p {
+  margin: 0 0 15px;
+  color: #999;
+  font-size: 13px;
+  text-align: left;
+}
+
+.descricao-produto-modal textarea {
+  width: 100%;
+  min-height: 350px;
+  max-height: 60vh;
+  padding: 14px;
+  box-sizing: border-box;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background-color: #292929;
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.descricao-produto-modal textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.fechar-descricao-produto {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #aaa;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.fechar-descricao-produto:hover {
+  background-color: #333;
+  color: white;
+}
+
+@keyframes abrirDescricaoProduto {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========================================
+   BOTÃO VER DESCRIÇÃO NO CARD
+======================================== */
+
+.botao-ver-descricao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 3px auto 8px;
+  padding: 5px 9px;
+  border: 1px solid #3d3d3d;
+  border-radius: 5px;
+  background: transparent;
+  color: #888;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.botao-ver-descricao:hover {
+  color: white;
+  border-color: #4a90e2;
+  background-color: rgba(74, 144, 226, 0.08);
+}
+
+/* ========================================
+   MODAL EM TELAS PEQUENAS
+======================================== */
+
+@media (max-width: 600px) {
+  .descricao-produto-overlay {
+    padding: 12px;
+  }
+
+  .descricao-produto-modal {
+    width: 100%;
+    padding: 22px 16px;
+  }
+
+  .descricao-produto-modal textarea {
+    min-height: 280px;
+  }
+}
+
+/* ========================================
+   CAMPO DE DESCRIÇÃO DO PRODUTO
+======================================== */
+
+.campo-descricao-cabecalho {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: -5px;
+}
+
+.campo-descricao-titulo {
+  color: #ddd;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* BOTÃO EXPANDIR */
+
+.botao-expandir-descricao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  border: 1px solid #3d3d3d;
+  border-radius: 6px;
+  background-color: #303030;
+  color: #aaa;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.botao-expandir-descricao:hover {
+  background-color: #383838;
+  color: white;
+  border-color: #4a90e2;
+  transform: translateY(-1px);
+}
+
+/* TEXTAREA PRINCIPAL */
+
+.textarea-descricao-produto {
+  width: 100%;
+  min-height: 130px;
+  max-height: 300px;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 2px solid #333;
+  border-radius: 6px;
+  background-color: #2a2a2a;
+  color: white;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: vertical;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.textarea-descricao-produto:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.08);
+}
+
+.textarea-descricao-produto::placeholder {
+  color: #777;
+}
+
+/* CONTADOR DE CARACTERES */
+
+.contador-campo-produto {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  text-align: right;
+  color: #777;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.contador-campo-produto.proximo-limite {
+  color: #eab308;
+}
+
+.contador-campo-produto.limite {
+  color: #ef4444;
+}
+
+/* ========================================
+   MODAL DE DESCRIÇÃO EXPANDIDA
+======================================== */
+
+.descricao-produto-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 13000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+/* CAIXA DO MODAL */
+
+.descricao-produto-modal {
+  position: relative;
+  width: min(850px, 95vw);
+  max-height: 90vh;
+  padding: 28px;
+  box-sizing: border-box;
+  border: 1px solid #383838;
+  border-radius: 14px;
+  background-color: #202020;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+  animation: abrirDescricaoProduto 0.25s ease both;
+}
+
+/* TÍTULO */
+
+.descricao-produto-modal h3 {
+  margin: 0 45px 8px 0;
+  color: white;
+  font-size: 21px;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* TEXTO ABAIXO DO TÍTULO */
+
+.descricao-produto-modal p {
+  margin: 0 0 15px;
+  color: #999;
+  font-size: 13px;
+  text-align: left;
+}
+
+/* TEXTAREA GRANDE */
+
+.descricao-produto-modal textarea {
+  display: block;
+
+  width: 100%;
+  min-height: 350px;
+  max-height: 60vh;
+  padding: 14px;
+  box-sizing: border-box;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background-color: #292929;
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.descricao-produto-modal textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.08);
+}
+
+/* BOTÃO X */
+
+.fechar-descricao-produto {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #aaa;
+  font-size: 25px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.fechar-descricao-produto:hover {
+  background-color: #333;
+  color: white;
+
+  transform: rotate(90deg);
+}
+
+/* BOTÃO CONCLUIR */
+
+.botao-salvar-descricao-admin {
+  margin-top: 14px;
+  padding: 11px 14px;
+  border: none;
+  border-radius: 7px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.botao-salvar-descricao-admin:hover {
+  background-color: #388e3c;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.25);
+}
+
+/* ========================================
+   ANIMAÇÃO DO MODAL
+======================================== */
+
+@keyframes abrirDescricaoProduto {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========================================
+   RESPONSIVO
+======================================== */
+
+@media (max-width: 600px) {
+  .campo-descricao-cabecalho {
+    align-items: flex-start;
+  }
+
+  .botao-expandir-descricao {
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+
+  .descricao-produto-overlay {
+    padding: 12px;
+  }
+
+  .descricao-produto-modal {
+    width: 100%;
+    max-height: 94vh;
+    padding: 22px 16px;
+  }
+
+  .descricao-produto-modal h3 {
+    font-size: 18px;
+  }
+
+  .descricao-produto-modal textarea {
+    min-height: 280px;
+    max-height: 55vh;
+  }
+}
+
+/* ========================================
+   SCROLLBAR DO TEXTAREA - EDIÇÃO
+======================================== */
+
+.textarea-descricao-produto {
+  scrollbar-width: thin;
+  scrollbar-color: #555 #242424;
+}
+
+/* Chrome, Edge, Safari */
+.textarea-descricao-produto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.textarea-descricao-produto::-webkit-scrollbar-track {
+  background: #242424;
+  border-radius: 8px;
+}
+
+.textarea-descricao-produto::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 8px;
+  border: 2px solid #242424;
+}
+
+.textarea-descricao-produto::-webkit-scrollbar-thumb:hover {
+  background: #6b6b6b;
+}
+
+/* ========================================
+   SCROLLBAR DO MODAL DE DESCRIÇÃO
+======================================== */
+
+.descricao-produto-modal textarea {
+  scrollbar-width: thin;
+  scrollbar-color: #555 #242424;
+}
+
+.descricao-produto-modal textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.descricao-produto-modal textarea::-webkit-scrollbar-track {
+  background: #242424;
+  border-radius: 8px;
+}
+
+.descricao-produto-modal textarea::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 8px;
+  border: 2px solid #242424;
+}
+
+.descricao-produto-modal textarea::-webkit-scrollbar-thumb:hover {
+  background: #6b6b6b;
 }
 
 /* ========================================

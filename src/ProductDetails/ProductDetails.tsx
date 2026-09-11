@@ -136,10 +136,21 @@ function ProductDetails({
         <div className="detalhes-produto">
           <div className="detalhes-imagem">
             {produto.imagem ? (
-              <img src={produto.imagem} alt={produto.nome} />
+              <img
+                src={produto.imagem}
+                alt={produto.nome}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  e.currentTarget.parentElement?.classList.add(
+                    "imagem-produto-erro",
+                  );
+                }}
+              />
             ) : (
               <span>📦</span>
             )}
+
+            {!produto.imagem && <span>📦</span>}
           </div>
           <div className="detalhes-informacoes">
             <span className="detalhes-label">Produto</span>

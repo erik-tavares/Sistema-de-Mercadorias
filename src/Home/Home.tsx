@@ -220,6 +220,16 @@ function Home({
     }
   }
 
+  const LIMITE_DESCRICAO_MODAL = 220;
+
+  function obterDescricaoResumida(descricao: string) {
+    if (descricao.length <= LIMITE_DESCRICAO_MODAL) {
+      return descricao;
+    }
+
+    return descricao.slice(0, LIMITE_DESCRICAO_MODAL).trimEnd() + "...";
+  }
+
   return (
     <div className="home">
       {/* =========================
@@ -358,7 +368,20 @@ function Home({
             <div className="modal-conteudo">
               <h2>{produtoSelecionado.nome}</h2>
 
-              <p>{produtoSelecionado.descricao}</p>
+              <div className="modal-descricao">
+                <p>{obterDescricaoResumida(produtoSelecionado.descricao)}</p>
+
+                {produtoSelecionado.descricao.length >
+                  LIMITE_DESCRICAO_MODAL && (
+                  <button
+                    type="button"
+                    className="botao-ver-mais-descricao"
+                    onClick={() => onVerDetalhes(produtoSelecionado.id)}
+                  >
+                    VER MAIS
+                  </button>
+                )}
+              </div>
 
               <strong>
                 {produtoSelecionado.preco.toLocaleString("pt-BR", {
