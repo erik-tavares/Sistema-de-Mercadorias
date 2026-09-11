@@ -4,11 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
 }
 
 model User {
-  id                 Int       @id @default(autoincrement())
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
   name               String
   email              String    @unique
   password           String
@@ -26,11 +27,12 @@ model User {
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   nome      String
   descricao String
   preco     Float
   imagem    String?
+  imagens   String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
