@@ -780,6 +780,8 @@ function App() {
           <ProductDetails
             produtoId={produtoDetalheId}
             onVoltar={voltarParaInicio}
+            carrinho={carrinho}
+            onCarrinhoChange={setCarrinho}
           />
         )
       ) : (
