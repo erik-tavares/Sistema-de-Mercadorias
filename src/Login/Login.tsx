@@ -13,13 +13,9 @@ type Props = {
 function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
-
   const [email, setEmail] = useState("");
-
   const [senha, setSenha] = useState("");
-
   const [lembrarUsuario, setLembrarUsuario] = useState(false);
-
   const [erros, setErros] = useState({
     email: "",
     senha: "",
@@ -29,13 +25,10 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
     async function carregarUltimoLogin() {
       try {
         const resposta = await fetch("http://localhost:3000/api/users");
-
         if (!resposta.ok) {
           return;
         }
-
         const usuarios = await resposta.json();
-
         const usuarioSalvo = usuarios
           .filter(
             (usuario: any) =>
@@ -142,7 +135,6 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
           <div className="text-login">
             <h1>Login</h1>
           </div>
-
           <div className={`input-group ${email ? "preenchido" : ""}`}>
             <input
               type="email"
@@ -150,21 +142,17 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-
                 setErros((prev) => ({
                   ...prev,
                   email: "",
                 }));
               }}
             />
-
             <label>E-mail</label>
-
             {erros.email && (
               <span className="mensagem-erro">{erros.email}</span>
             )}
           </div>
-
           <div className={`input-group ${senha ? "preenchido" : ""}`}>
             <input
               type={mostrarSenha ? "text" : "password"}
@@ -179,9 +167,7 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
                 }));
               }}
             />
-
             <label>Senha</label>
-
             <button
               type="button"
               onClick={() => setMostrarSenha(!mostrarSenha)}
@@ -189,12 +175,10 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
             >
               {mostrarSenha ? <IoEyeOff /> : <IoEye />}
             </button>
-
             {erros.senha && (
               <span className="mensagem-erro">{erros.senha}</span>
             )}
           </div>
-
           <div className="lembrar-usuario">
             <label
               className={`check-lembrar ${lembrarUsuario ? "checked" : ""}`}
@@ -210,7 +194,6 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
             </label>
           </div>
         </div>
-
         <div className="container-button">
           <div className="container-button">
             <button
@@ -222,7 +205,6 @@ function Login({ irParaCadastro, irParaHome, irParaAdmin, onLogin }: Props) {
             </button>
           </div>
         </div>
-
         <div className="tittle-submenu">
           <h4>
             Não tem conta? Crie uma agora!
