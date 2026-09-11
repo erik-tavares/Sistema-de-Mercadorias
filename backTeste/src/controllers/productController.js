@@ -84,6 +84,7 @@ import prisma from "../models/prisma.js";
 const normalizeProduct = (product) => ({
   ...product,
   imagem: product.imagem || "",
+  imagens: Array.isArray(product.imagens) ? product.imagens : [],
 });
 
 export const getAllProducts = async (req, res) => {
@@ -105,7 +106,7 @@ export const getAllProducts = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const { nome, descricao, preco, imagem } = req.body;
+  const { nome, descricao, preco, imagem, imagens = [] } = req.body;
 
   if (!nome || !descricao || preco === undefined || preco === null) {
     return res.status(400).json({
@@ -128,6 +129,7 @@ export const createProduct = async (req, res) => {
         descricao: String(descricao).trim(),
         preco: precoNumerico,
         imagem: imagem ? String(imagem) : "",
+        imagens: Array.isArray(imagens) ? imagens : [],
       },
     });
 
@@ -144,7 +146,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
 
-  const { nome, descricao, preco, imagem } = req.body;
+  const { nome, descricao, preco, imagem, imagens = [] } = req.body;
 
   if (!nome || !descricao || preco === undefined || preco === null) {
     return res.status(400).json({
@@ -170,6 +172,7 @@ export const updateProduct = async (req, res) => {
         descricao: String(descricao).trim(),
         preco: precoNumerico,
         imagem: imagem ? String(imagem) : "",
+        imagens: Array.isArray(imagens) ? imagens : [],
       },
     });
 
@@ -239,6 +242,7 @@ export const getProductById = async (req, res) => {
       descricao: produto.descricao,
       preco: produto.preco,
       imagem: produto.imagem || "",
+      imagens: Array.isArray(produto.imagens) ? produto.imagens : [],
       createdAt: produto.createdAt,
       updatedAt: produto.updatedAt,
     });

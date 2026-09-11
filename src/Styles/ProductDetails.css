@@ -41,6 +41,10 @@
   --produto-primaria-hover: #5f9ee8;
 }
 
+.light .detalhes-descricao {
+  color: black;
+}
+
 /* ==================================================
    CONTAINER
 ================================================== */
@@ -81,6 +85,7 @@
   background-color: var(--produto-primaria);
   border-color: var(--produto-primaria);
   color: #ffffff;
+
   transform: translateX(-3px);
 }
 
@@ -107,51 +112,30 @@
 }
 
 /* ==================================================
-   IMAGEM
+   ÁREA DA IMAGEM
 ================================================== */
 
 .detalhes-imagem {
+  position: relative;
   width: 100%;
+  max-width: 500px;
   height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: 20px;
   background: var(--produto-fundo-imagem);
+
   box-shadow:
     0 15px 40px rgba(0, 0, 0, 0.18),
     0 0 0 1px rgba(255, 255, 255, 0.04);
+
   box-sizing: border-box;
+
   transition:
     background-color 0.3s ease,
     box-shadow 0.3s ease;
-}
-
-.detalhes-imagem img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: cover;
-  cursor: pointer;
-  transition:
-    transform 0.4s ease,
-    opacity 0.3s ease;
-}
-
-.detalhes-imagem:hover img {
-  transform: scale(1.03);
-}
-
-.detalhes-imagem span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  font-size: 80px;
 }
 
 /* ==================================================
@@ -168,6 +152,7 @@
 
 .detalhes-imagem.imagem-produto-erro::after {
   content: "📦";
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -177,7 +162,219 @@
 }
 
 /* ==================================================
-   INFORMAÇÕES
+   CARROSSEL DE IMAGENS
+================================================== */
+
+.carrossel-imagens {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+.carrossel-imagens img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  background: transparent;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.imagem-carrossel-produto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 20px;
+  cursor: pointer;
+  transition:
+    opacity 0.25s ease,
+    transform 0.4s ease;
+}
+
+.detalhes-imagem:hover .imagem-carrossel-produto {
+  transform: scale(1.03);
+}
+
+/* ==================================================
+   IMAGEM ATUAL
+================================================== */
+
+.imagem-visivel {
+  transform: translateX(0);
+  z-index: 1;
+}
+
+/* ==================================================
+   PRÓXIMA IMAGEM
+================================================== */
+
+/* Imagem atual sai pela esquerda */
+
+.imagem-saindo-esquerda {
+  animation: sairParaEsquerda 0.35s ease-in-out forwards;
+  z-index: 1;
+}
+
+/* Nova imagem entra pela direita */
+
+.imagem-entrando-direita {
+  animation: entrarDaDireita 0.35s ease-in-out forwards;
+  z-index: 2;
+}
+
+@keyframes sairParaEsquerda {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes entrarDaDireita {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ==================================================
+   IMAGEM ANTERIOR
+================================================== */
+
+/* Imagem atual sai pela direita */
+
+.imagem-saindo-direita {
+  animation: sairParaDireita 0.35s ease-in-out forwards;
+  z-index: 1;
+}
+
+/* Nova imagem entra pela esquerda */
+
+.imagem-entrando-esquerda {
+  animation: entrarDaEsquerda 0.35s ease-in-out forwards;
+  z-index: 2;
+}
+
+@keyframes sairParaDireita {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes entrarDaEsquerda {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ==================================================
+   BOTÕES DO CARROSSEL
+================================================== */
+
+.carrossel-botao {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.carrossel-botao:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.carrossel-botao:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.carrossel-anterior {
+  left: 15px;
+}
+
+.carrossel-proxima {
+  right: 15px;
+}
+
+/* ==================================================
+   INDICADORES DO CARROSSEL
+================================================== */
+
+.carrossel-indicadores {
+  position: absolute;
+  left: 50%;
+  bottom: 15px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  transform: translateX(-50%);
+}
+
+.indicador-imagem {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.indicador-imagem:hover {
+  transform: scale(1.2);
+}
+
+.indicador-imagem.ativo {
+  background: #ffffff;
+  transform: scale(1.3);
+}
+
+/* ==================================================
+   INFORMAÇÕES DO PRODUTO
 ================================================== */
 
 .detalhes-informacoes {
@@ -208,17 +405,12 @@
 .detalhes-informacoes h1 {
   width: 100%;
   max-width: 100%;
-
   margin: 10px 0 0;
-
   color: var(--produto-texto-titulo);
-
   font-size: 38px;
   line-height: 1.2;
-
   overflow-wrap: anywhere;
   word-break: break-word;
-
   transition: color 0.3s ease;
 }
 
@@ -229,27 +421,20 @@
 .detalhes-separador {
   width: 70px;
   height: 3px;
-
   margin: 22px 0;
-
   background: var(--produto-primaria);
-
   border-radius: 10px;
 }
 
 /* ==================================================
-   TÍTULO DESCRIÇÃO
+   TÍTULO DA DESCRIÇÃO
 ================================================== */
 
 .detalhes-informacoes h2 {
   width: 100%;
-
   margin: 0 0 10px;
-
   color: var(--produto-texto-titulo);
-
   font-size: 20px;
-
   transition: color 0.3s ease;
 }
 
@@ -260,19 +445,13 @@
 .detalhes-descricao {
   width: 100%;
   max-width: 100%;
-
   margin: 0;
-
   color: var(--produto-texto-secundario);
-
   font-size: 16px;
   line-height: 1.7;
-
   overflow-wrap: anywhere;
   word-break: break-word;
-
   box-sizing: border-box;
-
   transition: color 0.3s ease;
 }
 
@@ -282,14 +461,10 @@
 
 .detalhes-preco {
   width: 100%;
-
   margin-top: 30px;
-
   color: var(--produto-primaria);
-
   font-size: 32px;
   font-weight: bold;
-
   overflow-wrap: anywhere;
 }
 
@@ -300,21 +475,14 @@
 .botao-comprar-detalhes {
   width: 100%;
   max-width: 350px;
-
   margin-top: 25px;
-
   padding: 14px 20px;
-
   border: 1px solid var(--produto-primaria);
-
   border-radius: 7px;
-
   background: var(--produto-primaria);
   color: #ffffff;
-
   font-size: 16px;
   font-weight: bold;
-
   cursor: pointer;
 
   transition:
@@ -350,33 +518,24 @@
 
 .detalhes-carregando {
   min-height: calc(100vh - 73px);
-
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
   color: var(--produto-primaria);
 }
 
 .detalhes-loader {
   width: 40px;
   height: 40px;
-
   border: 4px solid var(--produto-borda);
-
   border-top-color: var(--produto-primaria);
-
   border-radius: 50%;
-
   animation: detalhesSpin 0.8s linear infinite;
 }
 
 .detalhes-carregando p {
   margin-top: 15px;
-
   font-size: 15px;
   font-weight: bold;
 }
@@ -475,6 +634,289 @@
 }
 
 /* ==================================================
+   MODAL DA IMAGEM EM TELA CHEIA
+================================================== */
+
+.modal-imagem-tela-cheia {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  animation: abrirModalImagem 0.25s ease-out;
+}
+
+/* ==================================================
+   CONTAINER DA MODAL
+================================================== */
+
+.modal-imagem-container {
+  position: relative;
+  width: min(90vw, 1200px);
+  height: min(88vh, 900px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ==================================================
+   CARROSSEL DA MODAL
+================================================== */
+
+.modal-carrossel-imagens {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.modal-carrossel-imagens img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ==================================================
+   IMAGEM AMPLIADA
+================================================== */
+
+.modal-imagem-ampliada {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  animation: aparecerImagemModal 0.3s ease-out;
+}
+
+/* ==================================================
+   IMAGEM VISÍVEL
+================================================== */
+
+.modal-imagem-visivel {
+  transform: translateX(0);
+  z-index: 1;
+}
+
+/* ==================================================
+   PRÓXIMA IMAGEM DA MODAL
+================================================== */
+
+.modal-imagem-saindo-esquerda {
+  animation: modalSairEsquerda 0.35s ease-in-out forwards;
+  z-index: 1;
+}
+
+.modal-imagem-entrando-direita {
+  animation: modalEntrarDireita 0.35s ease-in-out forwards;
+  z-index: 2;
+}
+
+@keyframes modalSairEsquerda {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes modalEntrarDireita {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ==================================================
+   IMAGEM ANTERIOR DA MODAL
+================================================== */
+
+.modal-imagem-saindo-direita {
+  animation: modalSairDireita 0.35s ease-in-out forwards;
+  z-index: 1;
+}
+
+.modal-imagem-entrando-esquerda {
+  animation: modalEntrarEsquerda 0.35s ease-in-out forwards;
+  z-index: 2;
+}
+
+@keyframes modalSairDireita {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes modalEntrarEsquerda {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ==================================================
+   BOTÃO FECHAR DA MODAL
+================================================== */
+
+.botao-fechar-imagem {
+  position: fixed;
+  top: 25px;
+  right: 30px;
+  z-index: 100001;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.botao-fechar-imagem:hover {
+  background: rgba(255, 255, 255, 0.22);
+
+  transform: rotate(90deg) scale(1.05);
+}
+
+/* ==================================================
+   BOTÕES LATERAIS DA MODAL
+================================================== */
+
+.modal-carrossel-botao {
+  position: fixed;
+  top: 50%;
+  z-index: 100001;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-size: 42px;
+  line-height: 1;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.modal-carrossel-botao:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.modal-carrossel-anterior {
+  left: 30px;
+}
+
+.modal-carrossel-proxima {
+  right: 30px;
+}
+
+.modal-carrossel-anterior:hover,
+.modal-carrossel-proxima:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* ==================================================
+   INDICADORES DA MODAL
+================================================== */
+
+.modal-indicadores {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+
+.modal-indicador {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.modal-indicador:hover {
+  transform: scale(1.25);
+}
+
+.modal-indicador.ativo {
+  background: white;
+  transform: scale(1.3);
+}
+
+/* ==================================================
+   ANIMAÇÃO DE ABERTURA DA MODAL
+================================================== */
+
+@keyframes abrirModalImagem {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes aparecerImagemModal {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==================================================
    TABLET
 ================================================== */
 
@@ -485,16 +927,48 @@
 
   .detalhes-produto {
     grid-template-columns: 1fr;
+
     gap: 40px;
     margin-top: 35px;
   }
 
   .detalhes-imagem {
+    max-width: 420px;
     height: 400px;
+
+    margin: 0 auto;
   }
 
   .detalhes-informacoes h1 {
     font-size: 32px;
+  }
+
+  .modal-imagem-container {
+    width: 92vw;
+    height: 85vh;
+  }
+
+  .modal-carrossel-botao {
+    width: 48px;
+    height: 48px;
+
+    font-size: 36px;
+  }
+
+  .modal-carrossel-anterior {
+    left: 18px;
+  }
+
+  .modal-carrossel-proxima {
+    right: 18px;
+  }
+
+  .botao-fechar-imagem {
+    top: 18px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    font-size: 30px;
   }
 }
 
@@ -513,7 +987,13 @@
   }
 
   .detalhes-imagem {
+    max-width: 100%;
     height: 300px;
+
+    border-radius: 10px;
+  }
+
+  .imagem-carrossel-produto {
     border-radius: 10px;
   }
 
@@ -531,6 +1011,55 @@
 
   .botao-comprar-detalhes {
     max-width: 100%;
+  }
+
+  /* Carrossel */
+
+  .carrossel-botao {
+    width: 36px;
+    height: 36px;
+    font-size: 27px;
+  }
+
+  .carrossel-anterior {
+    left: 10px;
+  }
+
+  .carrossel-proxima {
+    right: 10px;
+  }
+
+  /* Modal */
+
+  .modal-imagem-container {
+    width: 96vw;
+    height: 82vh;
+  }
+
+  .modal-carrossel-botao {
+    width: 42px;
+    height: 42px;
+    font-size: 31px;
+  }
+
+  .modal-carrossel-anterior {
+    left: 10px;
+  }
+
+  .modal-carrossel-proxima {
+    right: 10px;
+  }
+
+  .botao-fechar-imagem {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    font-size: 27px;
+  }
+
+  .modal-indicadores {
+    bottom: 12px;
   }
 }
 
@@ -553,5 +1082,47 @@
 
   .detalhes-preco {
     font-size: 24px;
+  }
+
+  .modal-imagem-container {
+    width: 100vw;
+    height: 78vh;
+  }
+
+  .modal-carrossel-botao {
+    width: 38px;
+    height: 38px;
+
+    font-size: 28px;
+  }
+
+  .modal-carrossel-anterior {
+    left: 7px;
+  }
+
+  .modal-carrossel-proxima {
+    right: 7px;
+  }
+}
+
+/* ==================================================
+   ACESSIBILIDADE / REDUÇÃO DE MOVIMENTO
+================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .pagina-detalhes-produto,
+  .detalhes-imagem,
+  .imagem-carrossel-produto,
+  .botao-voltar-produto,
+  .botao-comprar-detalhes,
+  .carrossel-botao,
+  .indicador-imagem,
+  .modal-imagem-tela-cheia,
+  .modal-imagem-ampliada,
+  .modal-carrossel-botao,
+  .modal-indicador,
+  .botao-fechar-imagem {
+    animation: none !important;
+    transition: none !important;
   }
 }

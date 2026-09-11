@@ -14,6 +14,7 @@ type Produto = {
   descricao: string;
   preco: number;
   imagem: string;
+  imagens?: string[];
 };
 
 type Usuario = {
@@ -28,34 +29,27 @@ type Usuario = {
 
 function Admin({ sair, onLogout }: Props) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-
+  const [imagens, setImagens] = useState<string[]>([]);
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
   const [imagem, setImagem] = useState("");
-
   const [produtoAnimando, setProdutoAnimando] = useState<number | null>(null);
   const [fechandoFormulario, setFechandoFormulario] = useState(false);
-
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [imagemAmpliada, setImagemAmpliada] = useState<string | null>(null);
+  const [fechandoImagemAmpliada, setFechandoImagemAmpliada] = useState(false);
   const [editandoId, setEditandoId] = useState<number | null>(null);
-
   const [produtoAdicionado, setProdutoAdicionado] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(true);
-
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [usuariosAtivos, setUsuariosAtivos] = useState<number[]>([]);
-
   const [fotoUsuarioSelecionada, setFotoUsuarioSelecionada] =
     useState<Usuario | null>(null);
-
   const [produtoImagemSelecionada, setProdutoImagemSelecionada] =
     useState<Produto | null>(null);
-
-  // Controle do modal de descrição expandida
   const [descricaoExpandida, setDescricaoExpandida] = useState(false);
-
   async function carregarUsuariosAtivos() {
     try {
       const resposta = await fetch("http://localhost:3000/api/users/active");
@@ -96,6 +90,57 @@ function Admin({ sair, onLogout }: Props) {
       onLogout();
       sair();
     }, 2500);
+  }
+
+  function abrirImagemAmpliada(imagem: string) {
+    setFechandoImagemAmpliada(false);
+    setImagemAmpliada(imagem);
+  }
+
+  function fecharImagemAmpliada() {
+    setFechandoImagemAmpliada(true);
+
+    window.setTimeout(() => {
+      setImagemAmpliada(null);
+      setFechandoImagemAmpliada(false);
+    }, 250);
+  }
+
+  function selecionarImagens(event: React.ChangeEvent<HTMLInputElement>) {
+    const arquivos = Array.from(event.target.files || []);
+
+    if (arquivos.length === 0) return;
+
+    const imagensConvertidas = arquivos.map(
+      (arquivo) =>
+        new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+
+          reader.onload = () => {
+            resolve(String(reader.result));
+          };
+
+          reader.onerror = reject;
+
+          reader.readAsDataURL(arquivo);
+        }),
+    );
+
+    Promise.all(imagensConvertidas)
+      .then((novasImagens) => {
+        setImagens((anteriores) => [...anteriores, ...novasImagens]);
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar imagens:", error);
+      });
+
+    event.target.value = "";
+  }
+
+  function removerImagem(index: number) {
+    setImagens((anteriores) =>
+      anteriores.filter((_, indice) => indice !== index),
+    );
   }
 
   function formatarUltimoLogin(lastLoginAt?: string | null) {
@@ -233,6 +278,7 @@ function Admin({ sair, onLogout }: Props) {
     setDescricao("");
     setPreco("");
     setImagem("");
+    setImagens([]);
     setDescricaoExpandida(false);
     setMostrarFormulario(true);
   }
@@ -240,33 +286,16 @@ function Admin({ sair, onLogout }: Props) {
   function fecharFormulario() {
     setDescricaoExpandida(false);
     setFechandoFormulario(true);
-
     setTimeout(() => {
       setMostrarFormulario(false);
       setFechandoFormulario(false);
-
       setNome("");
       setDescricao("");
+      setImagens([]);
       setPreco("");
       setImagem("");
       setEditandoId(null);
     }, 400);
-  }
-
-  function adicionarImagem(e: React.ChangeEvent<HTMLInputElement>) {
-    const arquivo = e.target.files?.[0];
-
-    if (!arquivo) {
-      return;
-    }
-
-    const leitor = new FileReader();
-
-    leitor.onloadend = () => {
-      setImagem(leitor.result as string);
-    };
-
-    leitor.readAsDataURL(arquivo);
   }
 
   async function adicionarProduto() {
@@ -292,7 +321,8 @@ function Admin({ sair, onLogout }: Props) {
           nome: nome.trim(),
           descricao: descricao.trim(),
           preco: valorNumerico,
-          imagem,
+          imagem: imagens[0] || "",
+          imagens,
         }),
       });
 
@@ -312,6 +342,9 @@ function Admin({ sair, onLogout }: Props) {
             descricao: novoProduto.descricao,
             preco: Number(novoProduto.preco),
             imagem: novoProduto.imagem || "",
+            imagens: Array.isArray(novoProduto.imagens)
+              ? novoProduto.imagens
+              : [],
           },
         ];
 
@@ -384,6 +417,16 @@ function Admin({ sair, onLogout }: Props) {
     setImagem(produto.imagem || "");
     setDescricaoExpandida(false);
     setMostrarFormulario(true);
+
+    setImagens(
+      produto.imagens && produto.imagens.length > 0
+        ? produto.imagens
+        : produto.imagem
+          ? [produto.imagem]
+          : [],
+    );
+
+    setImagem(produto.imagem || "");
   }
 
   async function salvarEdicao() {
@@ -415,7 +458,8 @@ function Admin({ sair, onLogout }: Props) {
             nome: nome.trim(),
             descricao: descricao.trim(),
             preco: valorNumerico,
-            imagem,
+            imagem: imagens[0] || "",
+            imagens,
           }),
         },
       );
@@ -436,11 +480,13 @@ function Admin({ sair, onLogout }: Props) {
                 descricao: produtoAtualizado.descricao,
                 preco: Number(produtoAtualizado.preco),
                 imagem: produtoAtualizado.imagem || "",
+                imagens: Array.isArray(produtoAtualizado.imagens)
+                  ? produtoAtualizado.imagens
+                  : [],
               }
             : produto,
         ),
       );
-
       setNome("");
       setDescricao("");
       setPreco("");
@@ -529,17 +575,61 @@ function Admin({ sair, onLogout }: Props) {
         />
 
         {/* IMAGEM */}
-        <input type="file" accept="image/*" onChange={adicionarImagem} />
+        <input type="file" accept="image/*" onChange={selecionarImagens} />
 
-        {imagem && (
-          <div className="preview-imagem-container">
-            <img
-              src={imagem}
-              alt="Prévia do produto"
-              className="preview-produto"
-            />
+        {/* IMAGENS DO PRODUTO */}
+        <div className="campo-imagens-produto">
+          <div className="campo-imagens-cabecalho">
+            <span className="campo-descricao-titulo">Imagens do produto</span>
+
+            <span className="contador-imagens-produto">
+              {imagens.length} imagem{imagens.length !== 1 ? "ns" : ""}
+            </span>
           </div>
-        )}
+
+          <label className="botao-selecionar-imagens">
+            + Adicionar imagens
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={selecionarImagens}
+            />
+          </label>
+
+          {imagens.length > 0 && (
+            <div className="lista-imagens-produto">
+              {imagens.map((imagemAtual, index) => (
+                <div
+                  className="preview-imagem-produto"
+                  key={`${index}-${imagemAtual.slice(-20)}`}
+                >
+                  <button
+                    type="button"
+                    className="preview-imagem-produto-botao"
+                    onClick={() => abrirImagemAmpliada(imagemAtual)}
+                    aria-label={`Ampliar imagem ${index + 1}`}
+                  >
+                    <img src={imagemAtual} alt={`Imagem ${index + 1}`} />
+                  </button>
+
+                  {index === 0 && (
+                    <span className="imagem-principal-label">Principal</span>
+                  )}
+
+                  <button
+                    type="button"
+                    className="remover-imagem-produto"
+                    onClick={() => removerImagem(index)}
+                    aria-label={`Remover imagem ${index + 1}`}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* BOTÕES */}
         {editandoId !== null ? (
@@ -963,6 +1053,30 @@ function Admin({ sair, onLogout }: Props) {
 
               <strong>{produtoImagemSelecionada.nome}</strong>
             </section>
+          </div>
+        )}
+        {imagemAmpliada && (
+          <div
+            className={`modal-imagem-ampliada ${
+              fechandoImagemAmpliada ? "fechando" : ""
+            }`}
+            onClick={fecharImagemAmpliada}
+          >
+            <button
+              type="button"
+              className="fechar-modal-imagem"
+              onClick={fecharImagemAmpliada}
+              aria-label="Fechar imagem"
+            >
+              ×
+            </button>
+
+            <img
+              src={imagemAmpliada}
+              alt="Imagem ampliada do produto"
+              className="imagem-ampliada"
+              onClick={(event) => event.stopPropagation()}
+            />
           </div>
         )}
       </div>
