@@ -39,6 +39,7 @@ function ProductDetails({
   const [proximaImagem, setProximaImagem] = useState<number | null>(null);
   const [animandoImagem, setAnimandoImagem] = useState(false);
   const [imagemTelaCheia, setImagemTelaCheia] = useState(false);
+  const [saindoDaPagina, setSaindoDaPagina] = useState(false);
   useEffect(() => {
     async function carregarProduto() {
       try {
@@ -110,6 +111,17 @@ function ProductDetails({
     };
   }, [imagemTelaCheia]);
 
+  function voltarComAnimacao() {
+    if (saindoDaPagina) return;
+
+    setImagemTelaCheia(false);
+    setSaindoDaPagina(true);
+
+    window.setTimeout(() => {
+      onVoltar();
+    }, 480);
+  }
+
   function adicionarAoCarrinho() {
     if (!produto) return;
     const carrinhoAtualizado = [...carrinho];
@@ -131,13 +143,15 @@ function ProductDetails({
 
     window.setTimeout(() => {
       setProdutoAdicionado(false);
-      onVoltar();
+      voltarComAnimacao();
     }, 1300);
   }
 
   if (carregando) {
     return (
-      <div className="pagina-detalhes-produto">
+      <div
+        className={`pagina-detalhes-produto ${saindoDaPagina ? "pagina-detalhes-saindo" : ""}`}
+      >
         <div className="detalhes-carregando">
           <div className="detalhes-loader"></div>
           <p>Carregando produto...</p>
@@ -148,7 +162,9 @@ function ProductDetails({
 
   if (erro || !produto) {
     return (
-      <div className="pagina-detalhes-produto">
+      <div
+        className={`pagina-detalhes-produto ${saindoDaPagina ? "pagina-detalhes-saindo" : ""}`}
+      >
         <div className="produto-nao-encontrado">
           <span>📦</span>
           <h1>Produto não encontrado</h1>
@@ -156,7 +172,7 @@ function ProductDetails({
           <button
             type="button"
             className="botao-voltar-produto"
-            onClick={onVoltar}
+            onClick={voltarComAnimacao}
           >
             ← Voltar
           </button>
@@ -206,12 +222,14 @@ function ProductDetails({
   }
 
   return (
-    <div className="pagina-detalhes-produto">
+    <div
+      className={`pagina-detalhes-produto ${saindoDaPagina ? "pagina-detalhes-saindo" : ""}`}
+    >
       <div className="detalhes-container">
         <button
           type="button"
           className="botao-voltar-produto"
-          onClick={onVoltar}
+          onClick={voltarComAnimacao}
         >
           ← Voltar
         </button>

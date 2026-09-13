@@ -27,13 +27,12 @@ type Usuario = {
   tipo?: "admin" | "usuario";
 };
 
-function Admin({ sair, onLogout }: Props) {
+function Admin(_props: Props) {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [imagens, setImagens] = useState<string[]>([]);
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [preco, setPreco] = useState("");
-  const [imagem, setImagem] = useState("");
   const [produtoAnimando, setProdutoAnimando] = useState<number | null>(null);
   const [fechandoFormulario, setFechandoFormulario] = useState(false);
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -41,7 +40,6 @@ function Admin({ sair, onLogout }: Props) {
   const [fechandoImagemAmpliada, setFechandoImagemAmpliada] = useState(false);
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [produtoAdicionado, setProdutoAdicionado] = useState(false);
-  const [carregando, setCarregando] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(true);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [usuariosAtivos, setUsuariosAtivos] = useState<number[]>([]);
@@ -82,15 +80,6 @@ function Admin({ sair, onLogout }: Props) {
     indiceInicialProdutos,
     indiceInicialProdutos + PRODUTOS_POR_PAGINA,
   );
-
-  function handleSair() {
-    setCarregando(true);
-
-    setTimeout(() => {
-      onLogout();
-      sair();
-    }, 2500);
-  }
 
   function abrirImagemAmpliada(imagem: string) {
     setFechandoImagemAmpliada(false);
@@ -277,7 +266,6 @@ function Admin({ sair, onLogout }: Props) {
     setNome("");
     setDescricao("");
     setPreco("");
-    setImagem("");
     setImagens([]);
     setDescricaoExpandida(false);
     setMostrarFormulario(true);
@@ -293,7 +281,6 @@ function Admin({ sair, onLogout }: Props) {
       setDescricao("");
       setImagens([]);
       setPreco("");
-      setImagem("");
       setEditandoId(null);
     }, 400);
   }
@@ -361,7 +348,6 @@ function Admin({ sair, onLogout }: Props) {
       setNome("");
       setDescricao("");
       setPreco("");
-      setImagem("");
 
       setMostrarFormulario(true);
 
@@ -414,7 +400,6 @@ function Admin({ sair, onLogout }: Props) {
       }),
     );
 
-    setImagem(produto.imagem || "");
     setDescricaoExpandida(false);
     setMostrarFormulario(true);
 
@@ -425,8 +410,6 @@ function Admin({ sair, onLogout }: Props) {
           ? [produto.imagem]
           : [],
     );
-
-    setImagem(produto.imagem || "");
   }
 
   async function salvarEdicao() {
@@ -490,7 +473,6 @@ function Admin({ sair, onLogout }: Props) {
       setNome("");
       setDescricao("");
       setPreco("");
-      setImagem("");
       setEditandoId(null);
       setDescricaoExpandida(false);
 
@@ -702,13 +684,6 @@ function Admin({ sair, onLogout }: Props) {
 
   return (
     <div className="admin">
-      {carregando && (
-        <div className="loading-screen admin-exit-screen">
-          <div className="loader"></div>
-          <p>Saindo</p>
-        </div>
-      )}
-
       <div className="admin-container">
         <h1>Painel Administrativo</h1>
 
